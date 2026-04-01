@@ -82,8 +82,9 @@ async def add_security_headers(request: Request, call_next):
             "max-age=31536000; includeSubDomains"
 
     # Content Security Policy
-    response.headers["Content-Security-Policy"] = \
-        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+    if not request.url.path.startswith(("/docs", "/openapi.json", "/redoc")):
+        response.headers["Content-Security-Policy"] = \
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
 
     return response
 

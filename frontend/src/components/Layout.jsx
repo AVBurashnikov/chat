@@ -71,7 +71,7 @@ export const Layout = ({ children }) => {
             </div>
           )}
         </header>
-        <main style={{ flex: 1, display: 'flex', background: '#020617' }}>
+        <main style={{ flex: 1, display: 'flex', background: '#020617', overflow: 'hidden' }}>
           {children}
         </main>
       </div>

@@ -38,8 +38,10 @@ export const ChatWindow = ({ chatId }) => {
       return;
     }
 
+    const WEBSOCKET_BASE_URL = import.meta.env.VITE_WS_URL;
+
     const ws = new WebSocket(
-      `ws://localhost:8000/ws/chats/${chatId}?token=${token}`
+      `${WEBSOCKET_BASE_URL}/ws/chats/${chatId}?token=${token}`
     );
 
     ws.onopen = () => {
@@ -107,112 +109,112 @@ export const ChatWindow = ({ chatId }) => {
   }
 
   return (
-    <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#020617',
-      }}
-    >
       <div
-        style={{
-          flex: 1,
-          padding: 16,
-          overflowY: 'auto',
-        }}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            background: '#020617',
+          }}
       >
-        {messages.map((m) => {
-          const mine = user && m.sender_id === user.id;
-          const time = new Date(m.created_at).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          });
-          const initial = (m.sender_username || '?')[0]?.toUpperCase();
+        <div
+            style={{
+              flex: 1,
+              padding: 16,
+              overflowY: 'auto',
+            }}
+        >
+          {messages.map((m) => {
+            const mine = user && m.sender_id === user.id;
+            const time = new Date(m.created_at).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+            const initial = (m.sender_username || '?')[0]?.toUpperCase();
 
-          return (
-            <div
-              key={m.id}
-              style={{
-                display: 'flex',
-                justifyContent: mine ? 'flex-end' : 'flex-start',
-                marginBottom: 6,
-              }}
-            >
-              {!mine && (
+            return (
                 <div
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '50%',
-                    background: 'rgba(148,163,184,0.2)',
-                    color: '#e5e7eb',
-                    fontSize: 14,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: 8,
-                  }}
+                    key={m.id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: mine ? 'flex-end' : 'flex-start',
+                      marginBottom: 6,
+                    }}
                 >
-                  {initial}
+                  {!mine && (
+                      <div
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: '50%',
+                            background: 'rgba(148,163,184,0.2)',
+                            color: '#e5e7eb',
+                            fontSize: 14,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: 8,
+                          }}
+                      >
+                        {initial}
+                      </div>
+                  )}
+                  <div
+                      style={{
+                        maxWidth: '70%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: mine ? 'flex-end' : 'flex-start',
+                      }}
+                  >
+                    <div
+                        style={{
+                          padding: '8px 12px',
+                          borderRadius: 16,
+                          borderBottomRightRadius: mine ? 4 : 16,
+                          borderBottomLeftRadius: mine ? 16 : 4,
+                          background: mine ? '#2563eb' : '#111827',
+                          color: '#e5e7eb',
+                          fontSize: 14,
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                        }}
+                    >
+                      {m.content}
+                    </div>
+                    <div
+                        style={{
+                          marginTop: 2,
+                          fontSize: 10,
+                          color: '#6b7280',
+                        }}
+                    >
+                      {time}
+                    </div>
+                  </div>
+                  {mine && (
+                      <div
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: '50%',
+                            background: 'rgba(37,99,235,0.35)',
+                            color: '#e5e7eb',
+                            fontSize: 14,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginLeft: 8,
+                          }}
+                      >
+                        {(user?.username || '?')[0]?.toUpperCase()}
+                      </div>
+                  )}
                 </div>
-              )}
-              <div
-                style={{
-                  maxWidth: '70%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: mine ? 'flex-end' : 'flex-start',
-                }}
-              >
-                <div
-                  style={{
-                    padding: '8px 12px',
-                    borderRadius: 16,
-                    borderBottomRightRadius: mine ? 4 : 16,
-                    borderBottomLeftRadius: mine ? 16 : 4,
-                    background: mine ? '#2563eb' : '#111827',
-                    color: '#e5e7eb',
-                    fontSize: 14,
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                  }}
-                >
-                  {m.content}
-                </div>
-                <div
-                  style={{
-                    marginTop: 2,
-                    fontSize: 10,
-                    color: '#6b7280',
-                  }}
-                >
-                  {time}
-                </div>
-              </div>
-              {mine && (
-                <div
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '50%',
-                    background: 'rgba(37,99,235,0.35)',
-                    color: '#e5e7eb',
-                    fontSize: 14,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginLeft: 8,
-                  }}
-                >
-                  {(user?.username || '?')[0]?.toUpperCase()}
-                </div>
-              )}
-            </div>
-          );
-        })}
-        <div ref={bottomRef} />
+            );
+          })}
+          <div ref={bottomRef}/>
+        </div>
+        <MessageInput onSend={handleSend} disabled={!socket}/>
       </div>
-      <MessageInput onSend={handleSend} disabled={!socket} />
-    </div>
   );
 };
