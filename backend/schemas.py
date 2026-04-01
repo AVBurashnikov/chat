@@ -1,18 +1,28 @@
+"""
+Pydantic schemas for request/response validation.
+"""
+
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, constr
 
 
 class UserBase(BaseModel):
+    """Base user schema."""
     username: str
 
 
 class UserCreate(UserBase):
-    password: str
+    """User creation schema with validation."""
+
+    username: constr(min_length=3, max_length=50)  # type: ignore
+    password: constr(min_length=8, max_length=128)  # type: ignore
 
 
 class UserRead(UserBase):
+    """User read schema."""
+
     id: int
     created_at: datetime
 
@@ -21,23 +31,31 @@ class UserRead(UserBase):
 
 
 class Token(BaseModel):
+    """JWT token response."""
+
     access_token: str
     token_type: str = "bearer"
 
 
 class ChatBase(BaseModel):
+    """Base chat schema."""
+
     title: Optional[str] = None
 
 
 class ChatCreate(ChatBase):
-    participant_username: str
+    """Chat creation schema."""
+
+    participant_username: constr(min_length=3, max_length=50)  # type: ignore
 
 
 class ChatRead(ChatBase):
+    """Chat read schema."""
+
     id: int
     is_private: bool
     created_at: datetime
-    unread_count: int = 0
+    unread_count: int = Field(default=0, ge=0)
     other_online: bool = False
 
     class Config:
@@ -45,14 +63,19 @@ class ChatRead(ChatBase):
 
 
 class MessageBase(BaseModel):
-    content: str
+    """Base message schema."""
+
+    content: constr(min_length=1, max_length=5000)  # type: ignore
 
 
 class MessageCreate(MessageBase):
+    """Message creation schema."""
     pass
 
 
 class MessageRead(MessageBase):
+    """Message read schema."""
+
     id: int
     chat_id: int
     sender_id: int
@@ -64,4 +87,6 @@ class MessageRead(MessageBase):
 
 
 class ChatWithMessages(ChatRead):
+    """Chat with messages schema."""
+
     messages: List[MessageRead] = []

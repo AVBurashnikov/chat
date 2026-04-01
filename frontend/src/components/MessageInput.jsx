@@ -1,56 +1,87 @@
-import { useState } from "react";
+/**
+ * Message input component with validation
+ */
+
+import { useState } from 'react';
 
 export const MessageInput = ({ onSend, disabled }) => {
-  const [value, setValue] = useState("");
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!value.trim()) return;
-    onSend(value.trim());
-    setValue("");
+    setError('');
+
+    const trimmed = message.trim();
+
+    // Validate
+    if (!trimmed) {
+      setError('Message cannot be empty');
+      return;
+    }
+
+    if (trimmed.length > 5000) {
+      setError('Message is too long');
+      return;
+    }
+
+    // Send
+    onSend(trimmed);
+    setMessage('');
   };
 
   return (
     <form
       onSubmit={handleSubmit}
       style={{
-        padding: 10,
-        borderTop: "1px solid rgba(30,64,175,0.6)",
-        display: "flex",
+        display: 'flex',
         gap: 8,
-        background: "#020617",
+        padding: '12px 16px',
+        borderTop: '1px solid rgba(148,163,184,0.2)',
+        background: 'rgba(15,23,42,0.5)',
       }}
     >
       <input
-        placeholder="Напишите сообщение..."
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        disabled={disabled}
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Type a message..."
         style={{
           flex: 1,
-          padding: "8px 10px",
-          borderRadius: 999,
-          border: "1px solid rgba(148,163,184,0.4)",
-          background: "#020617",
-          color: "#e5e7eb",
+          padding: '10px 12px',
+          borderRadius: 8,
+          border: '1px solid rgba(148,163,184,0.3)',
+          background: '#020617',
+          color: '#e5e7eb',
+          fontSize: 14,
+          boxSizing: 'border-box',
         }}
+        disabled={disabled}
+        maxLength="5000"
+        autoComplete="off"
       />
       <button
         type="submit"
-        disabled={disabled}
+        disabled={disabled || !message.trim()}
         style={{
-          padding: "8px 16px",
-          borderRadius: 999,
-          border: "none",
-          background: "linear-gradient(135deg, #3b82f6, #22c55e)",
-          color: "#020617",
+          padding: '10px 16px',
+          borderRadius: 8,
+          background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+          color: '#020617',
+          border: 'none',
+          cursor: disabled ? 'not-allowed' : 'pointer',
           fontWeight: 600,
-          cursor: disabled ? "default" : "pointer",
-          opacity: disabled ? 0.4 : 1,
+          fontSize: 13,
+          opacity: disabled ? 0.5 : 1,
         }}
       >
-        Отпр.
+        Send
       </button>
+      {error && (
+        <div style={{ color: '#fecaca', fontSize: 12, marginTop: 4 }}>
+          {error}
+        </div>
+      )}
     </form>
   );
 };

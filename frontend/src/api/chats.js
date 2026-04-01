@@ -1,28 +1,72 @@
-import api from "./client";
+/**
+ * Chat API endpoints with validation
+ */
+
+import apiClient from './client';
 
 export async function getChats() {
-  const { data } = await api.get("/chats/");
-  return data;
+  try {
+    const { data } = await apiClient.get('/chats/');
+    return data;
+  } catch (error) {
+    console.error('Get chats error:', error);
+    throw error;
+  }
 }
 
 export async function getMessages(chatId) {
-  const { data } = await api.get(`/chats/${chatId}/messages`);
-  return data;
+  try {
+    const { data } = await apiClient.get(`/chats/${chatId}/messages`);
+    return data;
+  } catch (error) {
+    console.error('Get messages error:', error);
+    throw error;
+  }
 }
 
-export async function createChat(participantUsername, title) {
-  const payload = {
-    participant_username: participantUsername,
-    title: null,
-  };
-  const { data } = await api.post("/chats/", payload);
-  return data;
+export async function createChat(participantUsername) {
+  try {
+    // Validate before sending
+    if (!participantUsername || participantUsername.length < 3) {
+      throw new Error('Username must be at least 3 characters');
+    }
+
+    const { data } = await apiClient.post('/chats/', {
+      participant_username: participantUsername,
+    });
+    return data;
+  } catch (error) {
+    console.error('Create chat error:', error);
+    throw error;
+  }
 }
 
 export async function deleteChat(chatId) {
-  await api.delete(`/chats/${chatId}`);
+  try {
+    await apiClient.delete(`/chats/${chatId}`);
+  } catch (error) {
+    console.error('Delete chat error:', error);
+    throw error;
+  }
 }
 
 export async function markChatRead(chatId) {
-  await api.post(`/chats/${chatId}/read`);
+  try {
+    await apiClient.post(`/chats/${chatId}/read`);
+  } catch (error) {
+    console.error('Mark read error:', error);
+    throw error;
+  }
+}
+
+export async function sendMessage(chatId, content) {
+  try {
+    const { data } = await apiClient.post(`/chats/${chatId}/messages`, {
+      content,
+    });
+    return data;
+  } catch (error) {
+    console.error('Send message error:', error);
+    throw error;
+  }
 }
