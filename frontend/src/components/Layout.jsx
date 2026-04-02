@@ -3,9 +3,15 @@
  */
 
 import { useAuth } from '../hooks/useAuth';
+import { useEffect } from 'react';
 
-export const Layout = ({ children }) => {
+export const Layout = ({ children, theme = 'dark', onToggleTheme }) => {
   const { user, logout } = useAuth();
+
+  // Apply theme class to body for global styles
+  useEffect(() => {
+    document.body.className = theme;
+  }, [theme]);
 
   return (
     <div
@@ -14,7 +20,9 @@ export const Layout = ({ children }) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'linear-gradient(135deg, #1f2933, #111827)',
+        background: theme === 'dark'
+          ? 'linear-gradient(135deg, #1f2933, #111827)'
+          : 'linear-gradient(135deg, #f3f4f6, #e5e7eb)',
         fontFamily:
           'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       }}
@@ -45,9 +53,21 @@ export const Layout = ({ children }) => {
             borderBottom: '1px solid rgba(148,163,184,0.2)',
           }}
         >
-          <div style={{ color: '#e5e7eb', fontWeight: 600 }}>
+          <div style={{ color: theme === 'dark' ? '#e5e7eb' : '#111827', fontWeight: 600 }}>
             Chat Clone
           </div>
+          <button
+            onClick={onToggleTheme}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 18,
+              color: theme === 'dark' ? '#e5e7eb' : '#111827',
+            }}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
           {user && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ fontSize: 14, color: '#9ca3af' }}>

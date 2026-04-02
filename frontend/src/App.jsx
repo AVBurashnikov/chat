@@ -3,7 +3,7 @@
  * Displays login/register or chat based on auth state
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { useAuth } from './hooks/useAuth';
 import { LoginPage } from './pages/LoginPage';
@@ -13,6 +13,20 @@ import { ChatPage } from './pages/ChatPage';
 export const App = () => {
   const { user, loading } = useAuth();
   const [mode, setMode] = useState('login');
+  // Dark mode state
+  const [theme, setTheme] = useState('dark');
+
+  // Persist theme in localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('theme');
+    if (stored) setTheme(stored);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
 
   // Show loading state while checking auth
   if (loading) {
@@ -49,5 +63,5 @@ export const App = () => {
     content = <ChatPage />;
   }
 
-  return <Layout>{content}</Layout>;
+  return <Layout theme={theme} onToggleTheme={toggleTheme}>{content}</Layout>;
 };
