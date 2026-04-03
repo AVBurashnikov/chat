@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 
-export const MessageInput = ({ onSend, disabled }) => {
+export const MessageInput = ({ onSend, disabled, isMobile, onMenuOpen }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -41,6 +41,27 @@ export const MessageInput = ({ onSend, disabled }) => {
         background: 'var(--bg-form)',
       }}
     >
+      {isMobile && (
+        <button
+          type="button"
+          onClick={onMenuOpen}
+          style={{
+            background: 'var(--bg-form)',
+            border: '1px solid var(--border)',
+            borderRadius: '50%',
+            width: 40,
+            height: 40,
+            cursor: 'pointer',
+            color: 'var(--text-primary)',
+            fontSize: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          ☰
+        </button>
+      )}
       <input
         type="text"
         value={message}

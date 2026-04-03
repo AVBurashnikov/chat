@@ -8,7 +8,7 @@ import { getMessages } from '../api/chats';
 import { useAuth } from '../hooks/useAuth';
 import { MessageInput } from './MessageInput';
 
-export const ChatWindow = ({ chatId }) => {
+export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { data: messages = [] } = useQuery({
@@ -117,6 +117,7 @@ export const ChatWindow = ({ chatId }) => {
             background: 'var(--bg-primary)',
           }}
       >
+        {/*  */}
         <div
             style={{
               flex: 1,
@@ -214,7 +215,7 @@ export const ChatWindow = ({ chatId }) => {
           })}
           <div ref={bottomRef}/>
         </div>
-        <MessageInput onSend={handleSend} disabled={!socket}/>
+        <MessageInput onSend={handleSend} disabled={!socket} isMobile={isMobile} onMenuOpen={onMenuOpen}/>
       </div>
   );
 };

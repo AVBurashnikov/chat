@@ -60,7 +60,7 @@ body.light {
   --gradient-bg: linear-gradient(135deg, #e0e7ff, #f3f4f6);
   --gradient-header: radial-gradient(circle at 0 0, rgba(56,189,248,0.15), transparent 60%), #f9fafb;
   --gradient-selected: linear-gradient(135deg, #2563eb, #60a5fa);
-  --msg-own: #2563eb;
+  --msg-own: #517fe2;
   --msg-other: #f3f4f6;
   --danger: #ef4444;
   --danger-bg: rgba(239,68,68,0.1);
@@ -116,7 +116,6 @@ button {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
-}
   transition: all 0.2s ease;
 }
 
