@@ -96,6 +96,7 @@ export const ChatList = ({ selectedId, onSelect, isMobile, isOpen, onClose }) =>
         zIndex: isMobile ? 1000 : 'auto',
         transform: isMobile ? `translateX(${isOpen ? 0 : -100}%)` : 'none',
         transition: isMobile ? 'transform 0.3s ease' : 'none',
+        pointerEvents: isMobile && !isOpen ? 'none' : 'auto',
       }}
     >
       {isMobile && (
