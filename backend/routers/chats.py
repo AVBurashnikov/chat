@@ -276,6 +276,10 @@ async def list_messages(
             detail="Not a participant of this chat",
         )
 
+    # Mark chat as read
+    membership.last_read_at = datetime.utcnow()
+    db.commit()
+
     # Get messages
     messages = (
         db.query(models.Message, models.User.username)
