@@ -83,15 +83,15 @@ export const ChatList = ({ selectedId, onSelect }) => {
       style={{
         width: 280,
         boxSizing: 'border-box',
-        borderRight: '1px solid rgba(30,64,175,0.6)',
-        background: 'radial-gradient(circle at 0 0, #0f172a, #020617)',
+        borderRight: '1px solid var(--border-strong)',
+        background: 'var(--gradient-header)',
         padding: 8,
         display: 'flex',
         flexDirection: 'column',
         gap: 4,
       }}
     >
-      <div style={{ padding: '4px 8px', fontSize: 13, color: '#9ca3af' }}>
+      <div style={{ padding: '4px 8px', fontSize: 13, color: 'var(--text-secondary)' }}>
         Chats
       </div>
 
@@ -100,7 +100,7 @@ export const ChatList = ({ selectedId, onSelect }) => {
         onSubmit={handleCreateChat}
         style={{
           padding: 8,
-          borderBottom: '1px solid rgba(30,64,175,0.4)',
+          borderBottom: '1px solid var(--border)',
           boxSizing: 'border-box',
         }}
       >
@@ -121,9 +121,9 @@ export const ChatList = ({ selectedId, onSelect }) => {
               boxSizing: 'border-box',
               padding: '6px 9px',
               borderRadius: 8,
-              border: '1px solid rgba(148,163,184,0.35)',
-              background: '#020617',
-              color: '#e5e7eb',
+              border: '1px solid var(--border)',
+              background: 'var(--bg-input)',
+              color: 'var(--text-primary)',
               fontSize: 12,
             }}
             disabled={createChatMutation.isPending}
@@ -136,9 +136,9 @@ export const ChatList = ({ selectedId, onSelect }) => {
               width: 28,
               height: 28,
               borderRadius: 8,
-              border: '1px solid rgba(148,163,184,0.35)',
-              background: 'rgba(59,130,246,0.15)',
-              color: '#93c5fd',
+              border: '1px solid var(--border)',
+              background: 'var(--accent-bg)',
+              color: 'var(--accent)',
               fontWeight: 700,
               fontSize: 16,
               lineHeight: '16px',
@@ -150,7 +150,7 @@ export const ChatList = ({ selectedId, onSelect }) => {
           </button>
         </div>
         {formError && (
-          <div style={{ marginTop: 4, fontSize: 11, color: '#f87171' }}>
+          <div style={{ marginTop: 4, fontSize: 11, color: 'var(--danger)' }}>
             {formError}
           </div>
         )}
@@ -179,9 +179,9 @@ export const ChatList = ({ selectedId, onSelect }) => {
                 cursor: 'pointer',
                 background:
                   chat.id === selectedId
-                    ? 'linear-gradient(135deg, #2563eb, #60a5fa)'
+                    ? 'var(--gradient-selected)'
                     : 'transparent',
-                color: chat.id === selectedId ? '#e5e7eb' : '#9ca3af',
+                color: chat.id === selectedId ? 'var(--text-primary)' : 'var(--text-secondary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -195,7 +195,7 @@ export const ChatList = ({ selectedId, onSelect }) => {
                     height: 8,
                     borderRadius: '50%',
                     marginRight: 6,
-                    background: chat.other_online ? '#22c55e' : '#4b5563',
+                    background: chat.other_online ? 'var(--online-dot)' : 'var(--offline-dot)',
                   }}
                 />
                 {chat.title || `Chat #${chat.id}`}
@@ -207,8 +207,8 @@ export const ChatList = ({ selectedId, onSelect }) => {
                     marginLeft: 6,
                     padding: '0 6px',
                     borderRadius: 999,
-                    background: '#ef4444',
-                    color: '#f9fafb',
+                    background: 'var(--unread-bg)',
+                    color: 'var(--unread-text)',
                     fontSize: 10,
                   }}
                 >
@@ -226,8 +226,8 @@ export const ChatList = ({ selectedId, onSelect }) => {
                 borderRadius: 999,
                 border: 'none',
                 cursor: 'pointer',
-                background: 'rgba(248,113,113,0.12)',
-                color: '#fca5a5',
+                background: 'var(--danger-bg)',
+                color: 'var(--danger)',
                 fontSize: 12,
                 display: 'flex',
                 alignItems: 'center',

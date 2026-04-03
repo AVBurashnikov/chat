@@ -20,9 +20,7 @@ export const Layout = ({ children, theme = 'dark', onToggleTheme }) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: theme === 'dark'
-          ? 'linear-gradient(135deg, #1f2933, #111827)'
-          : 'linear-gradient(135deg, #f3f4f6, #e5e7eb)',
+        background: 'var(--gradient-bg)',
         fontFamily:
           'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       }}
@@ -32,13 +30,13 @@ export const Layout = ({ children, theme = 'dark', onToggleTheme }) => {
           width: '100%',
           maxWidth: 1100,
           height: '90vh',
-          background: '#0f172a',
+          background: 'var(--bg-surface)',
           borderRadius: 18,
-          boxShadow: '0 30px 80px rgba(0,0,0,0.6)',
+          boxShadow: 'var(--shadow)',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          border: '1px solid rgba(148,163,184,0.15)',
+          border: '1px solid var(--border)',
         }}
       >
         <header
@@ -48,12 +46,11 @@ export const Layout = ({ children, theme = 'dark', onToggleTheme }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background:
-              'radial-gradient(circle at 0 0, rgba(56,189,248,0.25), transparent 60%), #020617',
-            borderBottom: '1px solid rgba(148,163,184,0.2)',
+            background: 'var(--gradient-header)',
+            borderBottom: '1px solid var(--border)',
           }}
         >
-          <div style={{ color: theme === 'dark' ? '#e5e7eb' : '#111827', fontWeight: 600 }}>
+          <div style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
             Chat Clone
           </div>
           <button
@@ -63,14 +60,14 @@ export const Layout = ({ children, theme = 'dark', onToggleTheme }) => {
               border: 'none',
               cursor: 'pointer',
               fontSize: 18,
-              color: theme === 'dark' ? '#e5e7eb' : '#111827',
+              color: 'var(--text-primary)',
             }}
           >
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
           {user && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 14, color: '#9ca3af' }}>
+              <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
                 {user.username.charAt(0).toUpperCase() +
                   user.username.slice(1)}
               </span>
@@ -80,9 +77,9 @@ export const Layout = ({ children, theme = 'dark', onToggleTheme }) => {
                   fontSize: 12,
                   padding: '6px 12px',
                   borderRadius: 999,
-                  border: '1px solid rgba(148,163,184,0.4)',
-                  background: 'rgba(15,23,42,0.8)',
-                  color: '#e5e7eb',
+                  border: '1px solid var(--border)',
+                  background: 'var(--bg-form)',
+                  color: 'var(--text-primary)',
                   cursor: 'pointer',
                 }}
               >
@@ -91,7 +88,7 @@ export const Layout = ({ children, theme = 'dark', onToggleTheme }) => {
             </div>
           )}
         </header>
-        <main style={{ flex: 1, display: 'flex', background: '#020617', overflow: 'hidden' }}>
+        <main style={{ flex: 1, display: 'flex', background: 'var(--bg-primary)', overflow: 'hidden' }}>
           {children}
         </main>
       </div>

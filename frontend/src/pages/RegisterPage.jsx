@@ -50,7 +50,7 @@ export const RegisterPage = ({ onSwitch }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#e5e7eb',
+        color: 'var(--text-primary)',
       }}
     >
       <form
@@ -59,9 +59,9 @@ export const RegisterPage = ({ onSwitch }) => {
           width: 360,
           padding: 32,
           borderRadius: 16,
-          background: 'rgba(15,23,42,0.95)',
-          border: '1px solid rgba(148,163,184,0.3)',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.7)',
+          background: 'var(--bg-form)',
+          border: '1px solid var(--border)',
+          boxShadow: 'var(--shadow-card)',
           display: 'flex',
           flexDirection: 'column',
           gap: 16,
@@ -70,7 +70,7 @@ export const RegisterPage = ({ onSwitch }) => {
         <h2 style={{ margin: 0, fontSize: 22 }}>Регистрация</h2>
 
         <div>
-          <label style={{ fontSize: 13, color: '#9ca3af' }}>Логин</label>
+          <label style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Логин</label>
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -79,9 +79,9 @@ export const RegisterPage = ({ onSwitch }) => {
               width: '100%',
               padding: '8px 10px',
               borderRadius: 10,
-              border: '1px solid rgba(148,163,184,0.4)',
-              background: '#020617',
-              color: '#e5e7eb',
+              border: '1px solid var(--border)',
+              background: 'var(--bg-input)',
+              color: 'var(--text-primary)',
               boxSizing: 'border-box',
             }}
             disabled={loading}
@@ -91,7 +91,7 @@ export const RegisterPage = ({ onSwitch }) => {
         </div>
 
         <div>
-          <label style={{ fontSize: 13, color: '#9ca3af' }}>Пароль</label>
+          <label style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Пароль</label>
           <input
             type="password"
             value={password}
@@ -101,9 +101,9 @@ export const RegisterPage = ({ onSwitch }) => {
               width: '100%',
               padding: '8px 10px',
               borderRadius: 10,
-              border: '1px solid rgba(148,163,184,0.4)',
-              background: '#020617',
-              color: '#e5e7eb',
+              border: '1px solid var(--border)',
+              background: 'var(--bg-input)',
+              color: 'var(--text-primary)',
               boxSizing: 'border-box',
             }}
             disabled={loading}
@@ -112,8 +112,8 @@ export const RegisterPage = ({ onSwitch }) => {
           />
         </div>
 
-        {error && <div style={{ fontSize: 12, color: '#f97373' }}>{error}</div>}
-        {ok && <div style={{ fontSize: 12, color: '#4ade80' }}>{ok}</div>}
+        {error && <div style={{ fontSize: 12, color: 'var(--danger)' }}>{error}</div>}
+        {ok && <div style={{ fontSize: 12, color: 'var(--success)' }}>{ok}</div>}
 
         <button
           type="submit"
@@ -122,8 +122,8 @@ export const RegisterPage = ({ onSwitch }) => {
             padding: '10px 0',
             borderRadius: 999,
             border: 'none',
-            background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-            color: '#020617',
+            background: 'var(--success)',
+            color: 'var(--bg-primary)',
             fontWeight: 600,
             cursor: 'pointer',
             opacity: loading ? 0.6 : 1,
@@ -142,7 +142,7 @@ export const RegisterPage = ({ onSwitch }) => {
             borderRadius: 999,
             border: 'none',
             background: 'transparent',
-            color: '#93c5fd',
+            color: 'var(--accent)',
             fontSize: 13,
             cursor: 'pointer',
           }}

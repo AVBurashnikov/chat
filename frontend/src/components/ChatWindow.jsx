@@ -100,7 +100,7 @@ export const ChatWindow = ({ chatId }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#6b7280',
+          color: 'var(--text-muted)',
         }}
       >
         Выберите чат слева
@@ -114,7 +114,7 @@ export const ChatWindow = ({ chatId }) => {
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            background: '#020617',
+            background: 'var(--bg-primary)',
           }}
       >
         <div
@@ -147,8 +147,8 @@ export const ChatWindow = ({ chatId }) => {
                             width: 32,
                             height: 32,
                             borderRadius: '50%',
-                            background: 'rgba(148,163,184,0.2)',
-                            color: '#e5e7eb',
+                            background: 'var(--avatar-bg)',
+                            color: 'var(--text-primary)',
                             fontSize: 14,
                             display: 'flex',
                             alignItems: 'center',
@@ -173,10 +173,10 @@ export const ChatWindow = ({ chatId }) => {
                           borderRadius: 16,
                           borderBottomRightRadius: mine ? 4 : 16,
                           borderBottomLeftRadius: mine ? 16 : 4,
-                          background: mine ? '#2563eb' : '#111827',
-                          color: '#e5e7eb',
+                          background: mine ? 'var(--msg-own)' : 'var(--msg-other)',
+                          color: 'var(--text-primary)',
                           fontSize: 14,
-                          boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                          boxShadow: 'var(--shadow-card)',
                         }}
                     >
                       {m.content}
@@ -185,7 +185,7 @@ export const ChatWindow = ({ chatId }) => {
                         style={{
                           marginTop: 2,
                           fontSize: 10,
-                          color: '#6b7280',
+                          color: 'var(--text-muted)',
                         }}
                     >
                       {time}
@@ -197,7 +197,7 @@ export const ChatWindow = ({ chatId }) => {
                             width: 32,
                             height: 32,
                             borderRadius: '50%',
-                            background: 'rgba(37,99,235,0.35)',
+                            background: 'var(--avatar-own-bg)',
                             color: '#e5e7eb',
                             fontSize: 14,
                             display: 'flex',

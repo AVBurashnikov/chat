@@ -37,8 +37,8 @@ export const MessageInput = ({ onSend, disabled }) => {
         display: 'flex',
         gap: 8,
         padding: '12px 16px',
-        borderTop: '1px solid rgba(148,163,184,0.2)',
-        background: 'rgba(15,23,42,0.5)',
+        borderTop: '1px solid var(--border)',
+        background: 'var(--bg-form)',
       }}
     >
       <input
@@ -50,9 +50,9 @@ export const MessageInput = ({ onSend, disabled }) => {
           flex: 1,
           padding: '10px 12px',
           borderRadius: 8,
-          border: '1px solid rgba(148,163,184,0.3)',
-          background: '#020617',
-          color: '#e5e7eb',
+          border: '1px solid var(--border)',
+          background: 'var(--bg-input)',
+          color: 'var(--text-primary)',
           fontSize: 14,
           boxSizing: 'border-box',
         }}
@@ -66,8 +66,8 @@ export const MessageInput = ({ onSend, disabled }) => {
         style={{
           padding: '10px 16px',
           borderRadius: 8,
-          background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-          color: '#020617',
+          background: 'var(--success)',
+          color: 'var(--bg-primary)',
           border: 'none',
           cursor: disabled ? 'not-allowed' : 'pointer',
           fontWeight: 600,
@@ -78,7 +78,7 @@ export const MessageInput = ({ onSend, disabled }) => {
         Send
       </button>
       {error && (
-        <div style={{ color: '#fecaca', fontSize: 12, marginTop: 4 }}>
+        <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 4 }}>
           {error}
         </div>
       )}
