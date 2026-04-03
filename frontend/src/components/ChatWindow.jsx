@@ -98,11 +98,38 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
         style={{
           flex: 1,
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           color: 'var(--text-muted)',
+          background: 'var(--bg-primary)',
+          position: 'relative',
         }}
       >
+        {isMobile && (
+          <button
+            onClick={onMenuOpen}
+            style={{
+              position: 'absolute',
+              bottom: 16,
+              left: 16,
+              background: 'var(--bg-form)',
+              border: '1px solid var(--border)',
+              borderRadius: '50%',
+              width: 48,
+              height: 48,
+              cursor: 'pointer',
+              color: 'var(--text-primary)',
+              fontSize: 18,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: 'var(--shadow-card)',
+            }}
+          >
+            ☰
+          </button>
+        )}
         Выберите чат слева
       </div>
     );
