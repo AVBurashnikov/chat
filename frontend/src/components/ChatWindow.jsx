@@ -38,10 +38,13 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
       return;
     }
 
-    const WEBSOCKET_BASE_URL = import.meta.env.VITE_WS_URL;
+    const defaultHost = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`;
+    const WEBSOCKET_BASE_URL =
+      import.meta.env.VITE_WS_URL ||
+      defaultHost;
 
     const ws = new WebSocket(
-      `${WEBSOCKET_BASE_URL}/ws/chats/${chatId}?token=${token}`
+      `${WEBSOCKET_BASE_URL.replace(/\/\/$/, '')}/ws/chats/${chatId}?token=${token}`
     );
 
     ws.onopen = () => {
@@ -81,7 +84,10 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   }, [chatId, queryClient]);
 
   const handleSend = (text) => {
-    if (!socket || socket.readyState !== WebSocket.OPEN) return;
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      alert('Соединение не установлено. Пожалуйста, подождите или перезагрузите страницу.');
+      return;
+    }
 
     // Validate message length
     if (text.length > 5000) {
