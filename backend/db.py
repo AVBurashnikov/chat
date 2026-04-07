@@ -9,10 +9,13 @@ from sqlalchemy.pool import QueuePool
 
 from config import settings, app_logger
 
+def _is_sqlite_url(url: str) -> bool:
+    return url.startswith("sqlite:")
+
 # Create SQLAlchemy engine with connection pooling
 engine = create_engine(
     settings.database_url,
-    connect_args={"check_same_thread": False},
+    connect_args={"check_same_thread": False} if _is_sqlite_url(settings.database_url) else {},
     poolclass=QueuePool,
     pool_size=20,
     max_overflow=0,
@@ -29,11 +32,14 @@ SessionLocal = sessionmaker(
 Base = declarative_base()
 
 
-def run_sqlite_migrations():
+def run_runtime_migrations():
     """
     Run runtime migrations for SQLite.
     Adds missing columns if they don't exist.
     """
+    if not _is_sqlite_url(settings.database_url):
+        return
+
     try:
         with engine.begin() as conn:
             # Check if last_read_at column exists

@@ -13,7 +13,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import JSONResponse
 
-from db import Base, engine, run_sqlite_migrations, check_db_connection
+from db import Base, engine, run_runtime_migrations, check_db_connection
 from routers import auth as auth_router
 from routers import chats as chats_router
 from routers import ws as ws_router
@@ -24,7 +24,7 @@ setup_logging()
 
 # Initialize database
 Base.metadata.create_all(bind=engine)
-run_sqlite_migrations()
+run_runtime_migrations()
 
 # Initialize FastAPI app
 app = FastAPI(
