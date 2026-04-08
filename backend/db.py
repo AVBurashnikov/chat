@@ -3,7 +3,7 @@ Database configuration and session management.
 """
 
 import logging
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.pool import QueuePool
 
@@ -34,29 +34,33 @@ Base = declarative_base()
 
 def run_runtime_migrations():
     """
-    Run runtime migrations for SQLite.
+    Run runtime migrations.
     Adds missing columns if they don't exist.
     """
-    if not _is_sqlite_url(settings.database_url):
-        return
-
+    inspector = inspect(engine)
     try:
-        with engine.begin() as conn:
-            # Check if last_read_at column exists
-            columns = conn.execute(
-                text("PRAGMA table_info(chat_users)")
-            ).fetchall()
-            column_names = {row[1] for row in columns}
-
-            if "last_read_at" not in column_names:
-                conn.execute(
-                    text(
-                        "ALTER TABLE chat_users ADD COLUMN last_read_at DATETIME"
+        if inspector.has_table("chat_users"):
+            columns = [col["name"] for col in inspector.get_columns("chat_users")]
+            if "last_read_at" not in columns:
+                with engine.begin() as conn:
+                    conn.execute(
+                        text("ALTER TABLE chat_users ADD COLUMN last_read_at TIMESTAMP")
                     )
-                )
-                app_logger.info(
-                    "Added last_read_at column to chat_users table"
-                )
+                app_logger.info("Added last_read_at column to chat_users table")
+
+        if inspector.has_table("messages"):
+            columns = [col["name"] for col in inspector.get_columns("messages")]
+            with engine.begin() as conn:
+                if "delivered_at" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN delivered_at TIMESTAMP")
+                    )
+                    app_logger.info("Added delivered_at column to messages table")
+                if "read_at" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN read_at TIMESTAMP")
+                    )
+                    app_logger.info("Added read_at column to messages table")
     except Exception as e:
         app_logger.error(f"Error running migrations: {e}")
         raise

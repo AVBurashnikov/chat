@@ -80,6 +80,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
     ws.onopen = () => {
       console.log('WebSocket connected');
       setSocket(ws);
+      ws.send(JSON.stringify({ type: 'read' }));
     };
 
     ws.onmessage = (event) => {
@@ -92,8 +93,22 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
             ['messages', chatId],
             (old = []) => [...old, msg]
           );
-          // Invalidate chats to update unread counts
+          if (msg.sender_id !== user?.id) {
+            ws.send(JSON.stringify({ type: 'read' }));
+          }
           queryClient.invalidateQueries({ queryKey: ['chats'] });
+        } else if (msg.type === 'message_status') {
+          queryClient.setQueryData(['messages', chatId], (old = []) =>
+            old.map((item) =>
+              item.id === msg.id
+                ? {
+                    ...item,
+                    delivered_at: msg.delivered_at,
+                    read_at: msg.read_at,
+                  }
+                : item
+            )
+          );
         }
       } catch (err) {
         console.error('Failed to parse message:', err);
@@ -209,6 +224,13 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
                   hour: '2-digit',
                   minute: '2-digit',
                 });
+                const statusInfo = mine
+                  ? m.read_at
+                    ? { icon: '✓✓', color: '#0b93f6', title: 'Прочитано' }
+                    : m.delivered_at
+                      ? { icon: '✓✓', color: 'var(--text-muted)', title: 'Доставлено' }
+                      : { icon: '✓', color: 'var(--text-muted)', title: 'Отправлено' }
+                  : null;
                 const initial = (m.sender_username || '?')[0]?.toUpperCase();
 
                 return (
@@ -265,9 +287,24 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
                           marginTop: 2,
                           fontSize: 10,
                           color: 'var(--text-muted)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
                         }}
                       >
-                        {time}
+                        <span>{time}</span>
+                        {mine && statusInfo && (
+                          <span
+                            title={statusInfo.title}
+                            style={{
+                              fontSize: 10,
+                              color: statusInfo.color,
+                              fontWeight: 600,
+                            }}
+                          >
+                            {statusInfo.icon}
+                          </span>
+                        )}
                       </div>
                     </div>
                     {mine && (

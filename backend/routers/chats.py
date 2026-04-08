@@ -15,7 +15,7 @@ import auth as auth_utils
 import models
 import schemas
 from db import get_db
-from routers.ws import ONLINE_USERS
+from routers.ws import ONLINE_USERS, manager
 
 router = APIRouter(prefix="/chats", tags=["chats"])
 logger = logging.getLogger(__name__)
@@ -277,8 +277,39 @@ async def list_messages(
         )
 
     # Mark chat as read
-    membership.last_read_at = datetime.utcnow()
+    read_at = datetime.utcnow()
+    membership.last_read_at = read_at
+    db.add(membership)
+
+    # Mark all incoming messages as delivered and read
+    unread_messages = (
+        db.query(models.Message)
+        .filter(
+            models.Message.chat_id == chat_id,
+            models.Message.sender_id != current_user.id,
+            models.Message.read_at.is_(None),
+        )
+        .all()
+    )
+    for message in unread_messages:
+        message.read_at = read_at
+        if message.delivered_at is None:
+            message.delivered_at = read_at
+        db.add(message)
+
     db.commit()
+
+    if unread_messages:
+        for message in unread_messages:
+            await manager.broadcast_status(
+                chat_id,
+                {
+                    "type": "message_status",
+                    "id": message.id,
+                    "delivered_at": message.delivered_at.isoformat() if message.delivered_at else None,
+                    "read_at": message.read_at.isoformat() if message.read_at else None,
+                }
+            )
 
     # Get messages
     messages = (
@@ -299,6 +330,8 @@ async def list_messages(
                 sender_username=username,
                 content=message.content,
                 created_at=message.created_at,
+                delivered_at=message.delivered_at,
+                read_at=message.read_at,
             )
         )
 
@@ -346,10 +379,12 @@ async def send_message(
         )
 
     # Create message with XSS protection
+    delivered = manager.has_other_connections(chat_id, current_user.id)
     message = models.Message(
         chat_id=chat_id,
         sender_id=current_user.id,
         content=html.escape(message_in.content),  # Escape HTML
+        delivered_at=datetime.utcnow() if delivered else None,
     )
 
     db.add(message)
@@ -363,6 +398,8 @@ async def send_message(
         sender_username=current_user.username,
         content=message.content,
         created_at=message.created_at,
+        delivered_at=message.delivered_at,
+        read_at=message.read_at,
     )
 
 

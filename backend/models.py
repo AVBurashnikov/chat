@@ -66,6 +66,8 @@ class Message(Base):
     sender_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    delivered_at = Column(DateTime, nullable=True, default=None)
+    read_at = Column(DateTime, nullable=True, default=None)
 
     chat = relationship("Chat", back_populates="messages")
     sender = relationship("User", back_populates="messages")

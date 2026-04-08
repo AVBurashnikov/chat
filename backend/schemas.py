@@ -81,6 +81,8 @@ class MessageRead(MessageBase):
     sender_id: int
     sender_username: str
     created_at: datetime
+    delivered_at: Optional[datetime] = None
+    read_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
