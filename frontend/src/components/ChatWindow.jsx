@@ -81,6 +81,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
       console.log('WebSocket connected');
       setSocket(ws);
       ws.send(JSON.stringify({ type: 'read' }));
+      queryClient.invalidateQueries({ queryKey: ['chats'] });
     };
 
     ws.onmessage = (event) => {
@@ -109,6 +110,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
                 : item
             )
           );
+          queryClient.invalidateQueries({ queryKey: ['chats'] });
         }
       } catch (err) {
         console.error('Failed to parse message:', err);
@@ -128,7 +130,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
       ws.close();
       setSocket(null);
     };
-  }, [chatId, queryClient]);
+  }, [chatId, queryClient, user]);
 
   const handleSend = (text) => {
     if (!socket || socket.readyState !== WebSocket.OPEN) {

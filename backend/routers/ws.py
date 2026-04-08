@@ -263,6 +263,8 @@ async def websocket_chat(
                             message.delivered_at = read_at
                         db.add(message)
 
+                    membership.last_read_at = read_at
+                    db.add(membership)
                     db.commit()
 
                     for message in unread_messages:
