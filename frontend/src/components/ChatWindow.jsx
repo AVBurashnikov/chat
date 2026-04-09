@@ -2,11 +2,12 @@
  * Chat window with WebSocket support
  */
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMessages } from '../api/chats';
 import { useAuth } from '../hooks/useAuth';
 import { MessageInput } from './MessageInput';
+import { MessageList } from './MessageList';
 
 export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   const { user } = useAuth();
@@ -17,43 +18,6 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
     enabled: !!chatId,
   });
   const [socket, setSocket] = useState(null);
-  const bottomRef = useRef(null);
-
-  // Function to format date labels
-  const formatDateLabel = (date) => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const msgDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-    if (msgDate.getTime() === today.getTime()) {
-      return 'Сегодня';
-    } else if (msgDate.getTime() === yesterday.getTime()) {
-      return 'Вчера';
-    } else {
-      const options = { day: 'numeric', month: 'short' };
-      if (date.getFullYear() !== now.getFullYear()) {
-        options.year = 'numeric';
-      }
-      return date.toLocaleDateString('ru-RU', options);
-    }
-  };
-
-  // Group messages by date
-  const groupedMessages = useMemo(() => messages.reduce((groups, msg) => {
-    const date = new Date(msg.created_at);
-    const dateKey = formatDateLabel(date);
-    if (!groups[dateKey]) groups[dateKey] = [];
-    groups[dateKey].push(msg);
-    return groups;
-  }, {}), [messages]);
-
-  useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
 
   useEffect(() => {
     if (!chatId) return;
@@ -199,141 +163,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
             background: 'var(--bg-primary)',
           }}
       >
-        {/*  */}
-        <div
-            style={{
-              flex: 1,
-              padding: 16,
-              overflowY: 'auto',
-            }}
-        >
-          {Object.entries(groupedMessages).map(([dateLabel, msgs]) => (
-            <div key={dateLabel}>
-              <div
-                style={{
-                  textAlign: 'center',
-                  margin: '16px 0',
-                  color: 'var(--text-muted)',
-                  fontSize: 12,
-                  fontWeight: 500,
-                }}
-              >
-                {dateLabel}
-              </div>
-              {msgs.map((m) => {
-                const mine = user && m.sender_id === user.id;
-                const time = new Date(m.created_at).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                });
-                const statusInfo = mine
-                  ? m.read_at
-                    ? { icon: '✓✓', color: '#0b93f6', title: 'Прочитано' }
-                    : m.delivered_at
-                      ? { icon: '✓✓', color: 'var(--text-muted)', title: 'Доставлено' }
-                      : { icon: '✓', color: 'var(--text-muted)', title: 'Отправлено' }
-                  : null;
-                const initial = (m.sender_username || '?')[0]?.toUpperCase();
-
-                return (
-                  <div
-                    key={m.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: mine ? 'flex-end' : 'flex-start',
-                      marginBottom: 6,
-                    }}
-                  >
-                    {!mine && (
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: '50%',
-                          background: 'var(--avatar-bg)',
-                          color: 'var(--text-primary)',
-                          fontSize: 14,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginRight: 8,
-                        }}
-                      >
-                        {initial}
-                      </div>
-                    )}
-                    <div
-                      style={{
-                        maxWidth: '70%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: mine ? 'flex-end' : 'flex-start',
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: '8px 12px',
-                          borderRadius: 16,
-                          borderBottomRightRadius: mine ? 4 : 16,
-                          borderBottomLeftRadius: mine ? 16 : 4,
-                          background: mine ? 'var(--msg-own)' : 'var(--msg-other)',
-                          color: 'var(--text-primary)',
-                          fontSize: 14,
-                          boxShadow: 'var(--shadow-card)',
-                        }}
-                      >
-                        {m.content}
-                      </div>
-                      <div
-                        style={{
-                          marginTop: 2,
-                          fontSize: 10,
-                          color: 'var(--text-muted)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
-                        }}
-                      >
-                        <span>{time}</span>
-                        {mine && statusInfo && (
-                          <span
-                            title={statusInfo.title}
-                            style={{
-                              fontSize: 10,
-                              color: statusInfo.color,
-                              fontWeight: 600,
-                            }}
-                          >
-                            {statusInfo.icon}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {mine && (
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: '50%',
-                          background: 'var(--avatar-own-bg)',
-                          color: '#e5e7eb',
-                          fontSize: 14,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginLeft: 8,
-                        }}
-                      >
-                        {(user?.username || '?')[0]?.toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-          <div ref={bottomRef}/>
-        </div>
+        <MessageList messages={messages} />
         <MessageInput onSend={handleSend} disabled={!socket} isMobile={isMobile} onMenuOpen={onMenuOpen}/>
       </div>
   );
