@@ -31,7 +31,7 @@ export const MessageList = ({ messages }) => {
 
   // Group messages by date
   const groupedMessages = useMemo(() => messages.reduce((groups, msg) => {
-    const date = new Date(msg.created_at);
+    const date = new Date(msg.created_at + (msg.created_at.includes('Z') ? '' : 'Z'));
     const dateKey = formatDateLabel(date);
     if (!groups[dateKey]) groups[dateKey] = [];
     groups[dateKey].push(msg);

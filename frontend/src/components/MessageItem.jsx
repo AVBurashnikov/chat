@@ -8,7 +8,9 @@ export const MessageItem = ({ message }) => {
   const { user } = useAuth();
 
   const mine = user && message.sender_id === user.id;
-  const time = new Date(message.created_at).toLocaleTimeString([], {
+  // Ensure created_at is treated as UTC
+  const utcDate = new Date(message.created_at + (message.created_at.includes('Z') ? '' : 'Z'));
+  const time = utcDate.toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
   });
