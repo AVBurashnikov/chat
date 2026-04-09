@@ -134,6 +134,7 @@ def build_chat_read_response(
     db: Session,
     chat: models.Chat,
     current_user_id: int,
+    membership: models.ChatUser,
     last_read,
 ) -> schemas.ChatRead:
     """
@@ -143,6 +144,7 @@ def build_chat_read_response(
         db: Database session
         chat: Chat object
         current_user_id: Current user ID
+        membership: ChatUser membership record
         last_read: Last read timestamp
 
     Returns:
@@ -161,6 +163,7 @@ def build_chat_read_response(
         created_at=chat.created_at,
         unread_count=unread_count,
         other_online=other_online,
+        muted=membership.muted,
         last_message_text=last_message_text,
         last_message_sender=last_message_sender,
         last_message_time=last_message_time,

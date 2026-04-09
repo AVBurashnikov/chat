@@ -53,6 +53,8 @@ class ChatUser(Base):
     chat_id = Column(Integer, ForeignKey("chats.id", ondelete="CASCADE"))
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     last_read_at = Column(DateTime, nullable=True, default=None)
+    muted = Column(Boolean, default=False, nullable=False)
+    archived = Column(Boolean, default=False, nullable=False)
 
     chat = relationship("Chat", back_populates="participants")
     user = relationship("User")

@@ -40,13 +40,16 @@ async def list_chats(
     chats = (
         db.query(models.Chat)
         .join(models.ChatUser)
-        .filter(models.ChatUser.user_id == current_user.id)
+        .filter(
+            models.ChatUser.user_id == current_user.id,
+            models.ChatUser.archived.is_(False),
+        )
         .all()
     )
 
     result: List[schemas.ChatRead] = []
     for chat in chats:
-        # Get last read timestamp for this chat
+        # Get membership record for current user
         cu = (
             db.query(models.ChatUser)
             .filter(
@@ -60,7 +63,7 @@ async def list_chats(
 
         # Build response
         chat_read = build_chat_read_response(
-            db, chat, current_user.id, last_read
+            db, chat, current_user.id, cu, last_read
         )
         result.append(chat_read)
 
@@ -113,6 +116,18 @@ async def create_chat(
     )
 
     if existing_chat:
+        existing_membership = (
+            db.query(models.ChatUser)
+            .filter(
+                models.ChatUser.chat_id == existing_chat.id,
+                models.ChatUser.user_id == current_user.id,
+            )
+            .first()
+        )
+        if existing_membership and existing_membership.archived:
+            existing_membership.archived = False
+            db.add(existing_membership)
+            db.commit()
         return existing_chat
 
     # Create new chat
@@ -174,6 +189,58 @@ async def delete_chat(
     logger.info(
         f"Chat {chat_id} deleted by user {current_user.username}"
     )
+
+
+@router.post("/{chat_id}/mute", response_model=schemas.ChatRead)
+async def toggle_chat_mute(
+        chat_id: int,
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(
+            auth_utils.get_current_active_user
+        ),
+):
+    """
+    Toggle mute state for a chat.
+
+    Args:
+        chat_id: Chat ID
+        db: Database session
+        current_user: Current authenticated user
+
+    Returns:
+        Updated chat object with mute state
+    """
+    membership = check_chat_membership(db, chat_id, current_user.id)
+    membership.muted = not membership.muted
+    db.add(membership)
+    db.commit()
+
+    chat = db.query(models.Chat).get(chat_id)
+    return build_chat_read_response(
+        db, chat, current_user.id, membership, membership.last_read_at
+    )
+
+
+@router.post("/{chat_id}/archive", status_code=status.HTTP_204_NO_CONTENT)
+async def archive_chat(
+        chat_id: int,
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(
+            auth_utils.get_current_active_user
+        ),
+):
+    """
+    Archive a chat for the current user.
+
+    Args:
+        chat_id: Chat ID
+        db: Database session
+        current_user: Current authenticated user
+    """
+    membership = check_chat_membership(db, chat_id, current_user.id)
+    membership.archived = True
+    db.add(membership)
+    db.commit()
 
 
 @router.post("/{chat_id}/read", status_code=status.HTTP_204_NO_CONTENT)

@@ -59,6 +59,25 @@ export async function markChatRead(chatId) {
   }
 }
 
+export async function toggleChatMute(chatId) {
+  try {
+    const { data } = await apiClient.post(`/chats/${chatId}/mute`);
+    return data;
+  } catch (error) {
+    console.error('Toggle mute error:', error);
+    throw error;
+  }
+}
+
+export async function archiveChat(chatId) {
+  try {
+    await apiClient.post(`/chats/${chatId}/archive`);
+  } catch (error) {
+    console.error('Archive chat error:', error);
+    throw error;
+  }
+}
+
 export async function sendMessage(chatId, content) {
   try {
     const { data } = await apiClient.post(`/chats/${chatId}/messages`, {

@@ -47,6 +47,18 @@ def run_runtime_migrations():
                         text("ALTER TABLE chat_users ADD COLUMN last_read_at TIMESTAMP")
                     )
                 app_logger.info("Added last_read_at column to chat_users table")
+            if "muted" not in columns:
+                with engine.begin() as conn:
+                    conn.execute(
+                        text("ALTER TABLE chat_users ADD COLUMN muted BOOLEAN DEFAULT FALSE")
+                    )
+                app_logger.info("Added muted column to chat_users table")
+            if "archived" not in columns:
+                with engine.begin() as conn:
+                    conn.execute(
+                        text("ALTER TABLE chat_users ADD COLUMN archived BOOLEAN DEFAULT FALSE")
+                    )
+                app_logger.info("Added archived column to chat_users table")
 
         if inspector.has_table("messages"):
             columns = [col["name"] for col in inspector.get_columns("messages")]
