@@ -15,8 +15,9 @@ from fastapi.responses import JSONResponse
 
 from db import Base, engine, run_runtime_migrations, check_db_connection
 from routers import auth as auth_router
-from routers import chats as chats_router
-from routers import ws as ws_router
+from routers.chats import router as chats_router
+from routers.messages import router as messages_router
+from routers.ws import router as ws_router
 from config import settings, setup_logging, app_logger
 
 # Setup logging
@@ -91,8 +92,9 @@ async def add_security_headers(request: Request, call_next):
 
 # Register routers
 app.include_router(auth_router.router)
-app.include_router(chats_router.router)
-app.include_router(ws_router.router)
+app.include_router(chats_router)
+app.include_router(messages_router)
+app.include_router(ws_router)
 
 
 @app.get("/")
