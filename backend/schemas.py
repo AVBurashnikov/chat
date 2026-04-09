@@ -57,6 +57,9 @@ class ChatRead(ChatBase):
     created_at: datetime
     unread_count: int = Field(default=0, ge=0)
     other_online: bool = False
+    last_message_text: Optional[str] = None
+    last_message_sender: Optional[str] = None
+    last_message_time: Optional[datetime] = None
 
     class Config:
         from_attributes = True

@@ -185,64 +185,99 @@ export const ChatList = ({ selectedId, onSelect, isMobile, isOpen, onClose }) =>
 
       {/* Chat list */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        {chats.map((chat) => (
-          <div
-            key={chat.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              marginBottom: 4,
-            }}
-          >
-            <button
-              onClick={() => handleSelect(chat.id)}
+        {chats.map((chat) => {
+          const lastMessageTime = chat.last_message_time
+            ? new Date(chat.last_message_time).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })
+            : null;
+
+          const lastMessagePreview = chat.last_message_text
+            ? `${chat.last_message_sender ? `${chat.last_message_sender}: ` : ''}${chat.last_message_text}`
+            : 'No messages yet';
+
+          return (
+            <div
+              key={chat.id}
               style={{
-                flex: 1,
-                textAlign: 'left',
-                padding: '10px 10px',
-                borderRadius: 10,
-                border: 'none',
-                cursor: 'pointer',
-                background:
-                  chat.id === selectedId
-                    ? 'var(--gradient-selected)'
-                    : 'transparent',
-                color: chat.id === selectedId ? 'var(--text-primary)' : 'var(--text-secondary)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                gap: 4,
+                marginBottom: 4,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span
-                  style={{
-                    display: 'inline-block',
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    marginRight: 6,
-                    background: chat.other_online ? 'var(--online-dot)' : 'var(--offline-dot)',
-                  }}
-                />
-                {chat.title || `Chat #${chat.id}`}
-              </div>
+              <button
+                onClick={() => handleSelect(chat.id)}
+                style={{
+                  flex: 1,
+                  textAlign: 'left',
+                  padding: '10px 10px',
+                  borderRadius: 10,
+                  border: 'none',
+                  cursor: 'pointer',
+                  background:
+                    chat.id === selectedId
+                      ? 'var(--gradient-selected)'
+                      : 'transparent',
+                  color: chat.id === selectedId ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 6,
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        background: chat.other_online ? 'var(--online-dot)' : 'var(--offline-dot)',
+                      }}
+                    />
+                    <span style={{ fontWeight: 600, color: chat.id === selectedId ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
+                      {chat.title || `Chat #${chat.id}`}
+                    </span>
+                  </div>
+                  {lastMessageTime && (
+                    <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+                      {lastMessageTime}
+                    </span>
+                  )}
+                </div>
 
-              {chat.unread_count > 0 && (
-                <span
-                  style={{
-                    marginLeft: 6,
-                    padding: '0 6px',
-                    borderRadius: 999,
-                    background: 'var(--unread-bg)',
-                    color: 'var(--unread-text)',
-                    fontSize: 10,
-                  }}
-                >
-                  {chat.unread_count}
-                </span>
-              )}
-            </button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                  <div
+                    style={{
+                      flex: 1,
+                      fontSize: 12,
+                      color: 'var(--text-tertiary)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {lastMessagePreview}
+                  </div>
+
+                  {chat.unread_count > 0 && (
+                    <span
+                      style={{
+                        flexShrink: 0,
+                        padding: '0 6px',
+                        borderRadius: 999,
+                        background: 'var(--unread-bg)',
+                        color: 'var(--unread-text)',
+                        fontSize: 10,
+                      }}
+                    >
+                      {chat.unread_count}
+                    </span>
+                  )}
+                </div>
+              </button>
 
             <button
               onClick={(e) => handleDelete(e, chat.id)}
@@ -264,7 +299,7 @@ export const ChatList = ({ selectedId, onSelect, isMobile, isOpen, onClose }) =>
               ×
             </button>
           </div>
-        ))}
+        )})}
       </div>
     </div>
   );

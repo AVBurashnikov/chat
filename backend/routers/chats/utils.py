@@ -2,6 +2,7 @@
 Chat helper functions for common database operations.
 """
 
+import datetime
 from typing import Optional, List
 
 from sqlalchemy import func
@@ -69,6 +70,35 @@ def get_chat_title_and_online_status(
     return title, other_online
 
 
+def get_last_message_info(
+    db: Session,
+    chat_id: int,
+) -> tuple[Optional[str], Optional[str], Optional[datetime]]:
+    """
+    Get the last message details for a chat.
+
+    Args:
+        db: Database session
+        chat_id: Chat ID
+
+    Returns:
+        Tuple of last message text, sender username, and timestamp
+    """
+    last_message = (
+        db.query(models.Message, models.User.username)
+        .join(models.User, models.User.id == models.Message.sender_id)
+        .filter(models.Message.chat_id == chat_id)
+        .order_by(models.Message.created_at.desc())
+        .first()
+    )
+
+    if not last_message:
+        return None, None, None
+
+    message, username = last_message
+    return message.content, username, message.created_at
+
+
 def get_unread_count(
     db: Session,
     chat_id: int,
@@ -120,6 +150,9 @@ def build_chat_read_response(
     """
     unread_count = get_unread_count(db, chat.id, current_user_id, last_read)
     title, other_online = get_chat_title_and_online_status(db, chat, current_user_id)
+    last_message_text, last_message_sender, last_message_time = (
+        get_last_message_info(db, chat.id)
+    )
 
     return schemas.ChatRead(
         id=chat.id,
@@ -127,7 +160,10 @@ def build_chat_read_response(
         is_private=chat.is_private,
         created_at=chat.created_at,
         unread_count=unread_count,
-        other_online=other_online
+        other_online=other_online,
+        last_message_text=last_message_text,
+        last_message_sender=last_message_sender,
+        last_message_time=last_message_time,
     )
 
 
