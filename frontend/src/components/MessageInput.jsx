@@ -87,7 +87,7 @@ export const MessageInput = ({ onSend, disabled, isMobile, onMenuOpen }) => {
         style={{
           padding: '10px 16px',
           borderRadius: 8,
-          background: 'var(--success)',
+          background: 'var(--gradient-selected)',
           color: 'var(--bg-primary)',
           border: 'none',
           cursor: disabled ? 'not-allowed' : 'pointer',
@@ -96,7 +96,7 @@ export const MessageInput = ({ onSend, disabled, isMobile, onMenuOpen }) => {
           opacity: disabled ? 0.5 : 1,
         }}
       >
-        Send
+        Отправить
       </button>
       {error && (
         <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 4 }}>

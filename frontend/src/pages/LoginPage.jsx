@@ -131,7 +131,7 @@ export const LoginPage = ({ onSwitch, onSuccess }) => {
             padding: '10px 0',
             borderRadius: 999,
             border: 'none',
-            background: 'var(--success)',
+            background: 'var(--gradient-selected)',
             color: 'var(--bg-primary)',
             fontWeight: 600,
             cursor: 'pointer',

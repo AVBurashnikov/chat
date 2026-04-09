@@ -339,7 +339,7 @@ export const ChatList = ({ selectedId, onSelect, isMobile, isOpen, onClose }) =>
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {lastMessagePreview}
+                    {lastMessagePreview.substring(0, 20) + '...'}
                   </div>
 
                   
