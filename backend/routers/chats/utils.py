@@ -2,7 +2,7 @@
 Chat helper functions for common database operations.
 """
 
-import datetime
+from datetime import datetime
 from typing import Optional, List
 
 from sqlalchemy import func
@@ -103,7 +103,7 @@ def get_unread_count(
     db: Session,
     chat_id: int,
     current_user_id: int,
-    last_read: Optional,
+    last_read: Optional[datetime],
 ) -> int:
     """
     Get count of unread messages in a chat.
