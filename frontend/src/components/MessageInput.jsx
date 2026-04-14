@@ -191,7 +191,7 @@ export const MessageInput = ({ onSend, onSendFile, disabled, isMobile, onMenuOpe
             opacity: disabled ? 0.5 : 1,
           }}
         >
-          Отправить
+          Send
         </button>
       </div>
     </form>

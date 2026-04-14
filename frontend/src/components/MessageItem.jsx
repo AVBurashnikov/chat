@@ -52,6 +52,7 @@ export const MessageItem = ({ message }) => {
       <div
         style={{
           maxWidth: '70%',
+          wordBreak: 'break-word',
           display: 'flex',
           flexDirection: 'column',
           alignItems: mine ? 'flex-end' : 'flex-start',
