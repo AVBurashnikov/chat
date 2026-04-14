@@ -64,11 +64,51 @@ export const MessageItem = ({ message }) => {
             borderBottomRightRadius: mine ? 4 : 16,
             borderBottomLeftRadius: mine ? 16 : 4,
             background: mine ? 'var(--msg-own)' : 'var(--msg-other)',
-            color: 'var(--text-primary)',
+            color: mine ? 'var(--msg-text-own)' : 'var(--msg-text-other)',
             fontSize: 14,
             boxShadow: 'var(--shadow-card)',
           }}
         >
+          {message.file_url && message.file_type?.startsWith('image/') && (
+            <div style={{ marginBottom: 8 }}>
+              <img
+                src={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`}
+                alt={message.file_name}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: 200,
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                }}
+                onClick={() => window.open(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`, '_blank')}
+              />
+            </div>
+          )}
+          {message.file_url && !message.file_type?.startsWith('image/') && (
+            <div style={{ marginBottom: 8 }}>
+              <a
+                href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 10px',
+                  background: 'rgba(0,0,0,0.1)',
+                  borderRadius: 6,
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  fontSize: 12,
+                }}
+              >
+                📎 {message.file_name}
+                {message.file_size && (
+                  <span>({Math.round(message.file_size / 1024)}KB)</span>
+                )}
+              </a>
+            </div>
+          )}
           {message.content}
         </div>
         <div

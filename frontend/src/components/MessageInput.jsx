@@ -4,9 +4,10 @@
 
 import { useState } from 'react';
 
-export const MessageInput = ({ onSend, disabled, isMobile, onMenuOpen }) => {
+export const MessageInput = ({ onSend, onSendFile, disabled, isMobile, onMenuOpen }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,7 +15,19 @@ export const MessageInput = ({ onSend, disabled, isMobile, onMenuOpen }) => {
 
     const trimmed = message.trim();
 
-    // Validate
+    // If file is selected, send file message
+    if (selectedFile) {
+      if (trimmed.length > 5000) {
+        setError('Message is too long');
+        return;
+      }
+      onSendFile(selectedFile, trimmed);
+      setMessage('');
+      setSelectedFile(null);
+      return;
+    }
+
+    // Regular text message
     if (!trimmed) {
       setError('Message cannot be empty');
       return;
@@ -30,79 +43,162 @@ export const MessageInput = ({ onSend, disabled, isMobile, onMenuOpen }) => {
     setMessage('');
   };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file size (10MB max)
+      if (file.size > 10 * 1024 * 1024) {
+        setError('File too large. Maximum size is 10MB.');
+        return;
+      }
+      setSelectedFile(file);
+      setError('');
+    }
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
       style={{
         display: 'flex',
+        flexDirection: 'column',
         gap: 8,
         padding: '12px 16px',
         borderTop: '1px solid var(--border)',
         background: 'var(--bg-form)',
       }}
     >
-      {isMobile && (
-        <button
-          type="button"
-          onClick={onMenuOpen}
+      {selectedFile && (
+        <div
           style={{
-            background: 'var(--bg-form)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 12px',
+            background: 'var(--bg-secondary)',
+            borderRadius: 8,
             border: '1px solid var(--border)',
-            borderRadius: '50%',
-            width: 40,
-            height: 40,
+          }}
+        >
+          <span style={{ fontSize: 14, color: 'var(--text-primary)' }}>
+            📎 {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(1)}MB)
+          </span>
+          <button
+            type="button"
+            onClick={removeFile}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--danger)',
+              cursor: 'pointer',
+              fontSize: 16,
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <div style={{ color: 'var(--danger)', fontSize: 12, marginBottom: 4 }}>
+          {error}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        {isMobile && (
+          <button
+            type="button"
+            onClick={onMenuOpen}
+            style={{
+              background: 'var(--bg-form)',
+              border: '1px solid var(--border)',
+              borderRadius: '50%',
+              width: 40,
+              height: 40,
+              cursor: 'pointer',
+              color: 'var(--text-primary)',
+              fontSize: 16,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            ☰
+          </button>
+        )}
+
+        <label
+          style={{
             cursor: 'pointer',
-            color: 'var(--text-primary)',
-            fontSize: 16,
+            fontSize: 18,
+            color: 'var(--text-secondary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            width: 40,
+            height: 40,
+            borderRadius: '50%',
+            border: '1px solid var(--border)',
+            background: 'var(--bg-form)',
           }}
         >
-          ☰
+          📎
+          <input
+            type="file"
+            onChange={handleFileSelect}
+            style={{ display: 'none' }}
+            accept="image/*,.pdf,.doc,.docx,.txt"
+          />
+        </label>
+
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder={selectedFile ? "Add a caption..." : "Type a message..."}
+          style={{
+            flex: 1,
+            padding: '10px 12px',
+            borderRadius: 8,
+            border: '1px solid var(--border)',
+            background: 'var(--bg-input)',
+            color: 'var(--text-primary)',
+            fontSize: 14,
+            boxSizing: 'border-box',
+          }}
+          disabled={disabled}
+          maxLength="5000"
+          autoComplete="off"
+        />
+
+        <button
+          type="submit"
+          disabled={disabled || (!message.trim() && !selectedFile)}
+          style={{
+            padding: '10px 16px',
+            borderRadius: 8,
+            background: 'var(--gradient-selected)',
+            color: 'var(--bg-primary)',
+            border: 'none',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            fontWeight: 600,
+            fontSize: 13,
+            opacity: disabled ? 0.5 : 1,
+          }}
+        >
+          Отправить
         </button>
-      )}
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type a message..."
-        style={{
-          flex: 1,
-          padding: '10px 12px',
-          borderRadius: 8,
-          border: '1px solid var(--border)',
-          background: 'var(--bg-input)',
-          color: 'var(--text-primary)',
-          fontSize: 14,
-          boxSizing: 'border-box',
-        }}
-        disabled={disabled}
-        maxLength="5000"
-        autoComplete="off"
-      />
-      <button
-        type="submit"
-        disabled={disabled || !message.trim()}
-        style={{
-          padding: '10px 16px',
-          borderRadius: 8,
-          background: 'var(--gradient-selected)',
-          color: 'var(--bg-primary)',
-          border: 'none',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          fontWeight: 600,
-          fontSize: 13,
-          opacity: disabled ? 0.5 : 1,
-        }}
-      >
-        Отправить
-      </button>
+      </div>
+    </form>
+  );
       {error && (
         <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 4 }}>
           {error}
         </div>
       )}
-    </form>
-  );
 };

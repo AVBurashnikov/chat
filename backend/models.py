@@ -70,6 +70,11 @@ class Message(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     delivered_at = Column(DateTime, nullable=True, default=None)
     read_at = Column(DateTime, nullable=True, default=None)
+    # File attachment fields
+    file_url = Column(String(500), nullable=True)
+    file_name = Column(String(255), nullable=True)
+    file_type = Column(String(100), nullable=True)
+    file_size = Column(Integer, nullable=True)
 
     chat = relationship("Chat", back_populates="messages")
     sender = relationship("User", back_populates="messages")

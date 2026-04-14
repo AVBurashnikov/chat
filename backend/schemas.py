@@ -70,6 +70,10 @@ class MessageBase(BaseModel):
     """Base message schema."""
 
     content: constr(min_length=1, max_length=5000)  # type: ignore
+    file_url: Optional[str] = None
+    file_name: Optional[str] = None
+    file_type: Optional[str] = None
+    file_size: Optional[int] = None
 
 
 class MessageCreate(MessageBase):

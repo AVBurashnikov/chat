@@ -73,6 +73,26 @@ def run_runtime_migrations():
                         text("ALTER TABLE messages ADD COLUMN read_at TIMESTAMP")
                     )
                     app_logger.info("Added read_at column to messages table")
+                if "file_url" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN file_url VARCHAR(500)")
+                    )
+                    app_logger.info("Added file_url column to messages table")
+                if "file_name" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN file_name VARCHAR(255)")
+                    )
+                    app_logger.info("Added file_name column to messages table")
+                if "file_type" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN file_type VARCHAR(100)")
+                    )
+                    app_logger.info("Added file_type column to messages table")
+                if "file_size" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN file_size INTEGER")
+                    )
+                    app_logger.info("Added file_size column to messages table")
     except Exception as e:
         app_logger.error(f"Error running migrations: {e}")
         raise

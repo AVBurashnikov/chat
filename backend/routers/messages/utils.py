@@ -103,6 +103,10 @@ def build_message_read_response(
                 created_at=message.created_at,
                 delivered_at=message.delivered_at,
                 read_at=message.read_at,
+                file_url=message.file_url,
+                file_name=message.file_name,
+                file_type=message.file_type,
+                file_size=message.file_size,
             )
         )
 

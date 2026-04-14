@@ -4,7 +4,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getMessages } from '../api/chats';
+import { getMessages, sendFileMessage } from '../api/chats';
 import { useAuth } from '../hooks/useAuth';
 import { MessageInput } from './MessageInput';
 import { MessageList } from './MessageList';
@@ -111,6 +111,18 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
     socket.send(JSON.stringify({ content: text }));
   };
 
+  const handleSendFile = async (file, content) => {
+    try {
+      await sendFileMessage(chatId, file, content);
+      // Refresh messages
+      queryClient.invalidateQueries({ queryKey: ['messages', chatId] });
+      queryClient.invalidateQueries({ queryKey: ['chats'] });
+    } catch (error) {
+      console.error('Failed to send file:', error);
+      alert('Failed to send file. Please try again.');
+    }
+  };
+
   if (!chatId) {
     return (
       <div
@@ -164,7 +176,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
           }}
       >
         <MessageList messages={messages} />
-        <MessageInput onSend={handleSend} disabled={!socket} isMobile={isMobile} onMenuOpen={onMenuOpen}/>
+        <MessageInput onSend={handleSend} onSendFile={handleSendFile} disabled={!socket} isMobile={isMobile} onMenuOpen={onMenuOpen}/>
       </div>
   );
 };

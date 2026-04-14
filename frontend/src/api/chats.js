@@ -89,3 +89,23 @@ export async function sendMessage(chatId, content) {
     throw error;
   }
 }
+
+export async function sendFileMessage(chatId, file, content = '') {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (content) {
+      formData.append('content', content);
+    }
+
+    const { data } = await apiClient.post(`/chats/${chatId}/messages/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return data;
+  } catch (error) {
+    console.error('Send file message error:', error);
+    throw error;
+  }
+}

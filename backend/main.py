@@ -27,6 +27,10 @@ setup_logging()
 Base.metadata.create_all(bind=engine)
 run_runtime_migrations()
 
+# Create uploads directory
+import os
+os.makedirs("uploads", exist_ok=True)
+
 # Initialize FastAPI app
 app = FastAPI(
     title="Mini Telegram Clone - Secure Version",
@@ -91,6 +95,11 @@ async def add_security_headers(request: Request, call_next):
 
 
 # Register routers
+from fastapi.staticfiles import StaticFiles
+
+# Mount static files directory for uploaded files
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 app.include_router(auth_router.router)
 app.include_router(chats_router)
 app.include_router(messages_router)
