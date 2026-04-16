@@ -112,6 +112,46 @@ export const MessageInput = ({
         </div>
       )}
 
+      {replyTo && (
+        <div
+          style={{
+            padding: '8px',
+            borderLeft: '3px solid #0b93f6',
+            background: 'var(--bg-secondary)',
+            borderRadius: 6,
+            display: 'flex',
+            gap: '8px',
+            justifyContent: 'space-between'
+          }}
+        >
+          <div>
+            <strong>{replyTo.sender_username}</strong>
+            <div style={{ 
+              fontSize: 12,
+              wordBreak: 'break-word'
+              }}
+            >
+              {replyTo.content.length < 50 
+                  ? replyTo.content 
+                  : `${replyTo.content.substring(0, 50)}...`}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onCancelReply}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--danger)',
+              cursor: 'pointer',
+              fontSize: 16,
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {error && (
         <div style={{ color: 'var(--danger)', fontSize: 12, marginBottom: 4 }}>
           {error}
@@ -164,29 +204,6 @@ export const MessageInput = ({
             accept="image/*,.pdf,.doc,.docx,.txt"
           />
         </label>
-        {replyTo && (
-          <div
-            style={{
-              padding: '8px',
-              borderLeft: '3px solid #0b93f6',
-              background: 'var(--bg-secondary)',
-              borderRadius: 6,
-              display: 'flex',
-              justifyContent: 'space-between'
-            }}
-          >
-            <div>
-              <strong>{replyTo.sender_username}</strong>
-              <div style={{ fontSize: 12 }}>
-                {replyTo.content}
-              </div>
-            </div>
-
-            <button type="button" onClick={onCancelReply}>
-              ✕
-            </button>
-          </div>
-        )}
         <input
           type="text"
           value={message}
@@ -206,23 +223,22 @@ export const MessageInput = ({
           maxLength="5000"
           autoComplete="off"
         />
-
         <button
-          type="submit"
-          disabled={disabled || (!message.trim() && !selectedFile)}
-          style={{
-            padding: '10px 16px',
-            borderRadius: 8,
-            background: 'var(--gradient-selected)',
-            color: 'var(--bg-primary)',
-            border: 'none',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            fontWeight: 600,
-            fontSize: 13,
-            opacity: disabled ? 0.5 : 1,
-          }}
-        >
-          Send
+            type="submit"
+            disabled={disabled || (!message.trim() && !selectedFile)}
+            style={{
+              padding: '10px 16px',
+              borderRadius: 8,
+              background: 'var(--gradient-selected)',
+              color: 'var(--bg-primary)',
+              border: 'none',
+              cursor: disabled ? 'not-allowed' : 'pointer',
+              fontWeight: 600,
+              fontSize: 13,
+              opacity: disabled ? 0.5 : 1,
+            }}
+          >
+            Send
         </button>
       </div>
     </form>

@@ -124,6 +124,22 @@ async def handle_new_message(
         db.commit()
         db.refresh(message)
 
+        reply_payload = None
+
+        if message.reply_to:
+            reply_msg = (
+                db.query(models.Message)
+                .filter(models.Message.id == message.reply_to)
+                .first()
+            )
+
+            if reply_msg:
+                reply_payload = {
+                    "id": reply_msg.id,
+                    "content": reply_msg.content,
+                    "sender_username": reply_msg.sender.username,
+                }
+
         # Prepare broadcast payload
         payload = {
             "type": "message",
@@ -136,11 +152,7 @@ async def handle_new_message(
             "delivered_at": message.delivered_at.isoformat() if message.delivered_at else None,
             "read_at": message.read_at.isoformat() if message.read_at else None,
             "reply_to": message.reply_to,
-            "reply_to_message": {
-                "id": reply_message[0].id,
-                "content": reply_message[0].content,
-                "sender_username": reply_message[1],
-            } if reply_message else None,
+            "reply_to_message": reply_payload
         }
 
         return payload

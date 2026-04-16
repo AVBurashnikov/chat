@@ -146,7 +146,9 @@ export const MessageItem = ({ message, onReply }) => {
                 {message.reply_to_message.sender_username}
               </strong>
               <div>
-                {message.reply_to_message.content}
+                {message.reply_to_message.content.length < 50 
+                  ? message.reply_to_message.content 
+                  : `${message.reply_to_message.content.substring(0, 50)}...`}
               </div>
             </div>
           )}
