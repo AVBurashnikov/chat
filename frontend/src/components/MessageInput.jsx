@@ -216,7 +216,7 @@ export const MessageInput = ({
             border: '1px solid var(--border)',
             background: 'var(--bg-input)',
             color: 'var(--text-primary)',
-            fontSize: 14,
+            fontSize: 16,
             boxSizing: 'border-box',
           }}
           disabled={disabled}
