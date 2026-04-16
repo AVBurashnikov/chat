@@ -67,6 +67,7 @@ class Message(Base):
     chat_id = Column(Integer, ForeignKey("chats.id", ondelete="CASCADE"))
     sender_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     content = Column(Text, nullable=False)
+    reply_to = Column(Integer, ForeignKey("messages.id", ondelete="SET NULL"), nullable=True)  # New field for replies
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     delivered_at = Column(DateTime, nullable=True, default=None)
     read_at = Column(DateTime, nullable=True, default=None)
@@ -78,3 +79,10 @@ class Message(Base):
 
     chat = relationship("Chat", back_populates="messages")
     sender = relationship("User", back_populates="messages")
+
+    reply_to_message = relationship(
+        "Message",
+        remote_side=[id],
+        backref="replies",
+        lazy="joined"
+    )

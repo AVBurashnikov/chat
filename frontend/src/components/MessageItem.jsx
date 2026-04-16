@@ -3,8 +3,9 @@
  */
 
 import { useAuth } from '../hooks/useAuth';
+import { useRef } from 'react';
 
-export const MessageItem = ({ message }) => {
+export const MessageItem = ({ message, onReply }) => {
   const { user } = useAuth();
 
   const mine = user && message.sender_id === user.id;
@@ -23,8 +24,29 @@ export const MessageItem = ({ message }) => {
     : null;
   const initial = (message.sender_username || '?')[0]?.toUpperCase();
 
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    onReply(message);
+  };
+
+  const touchStartX = useRef(0);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 50) {
+      onReply(message);
+    }
+  };
+
   return (
     <div
+      onContextMenu={handleContextMenu}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       style={{
         display: 'flex',
         justifyContent: mine ? 'flex-end' : 'flex-start',
@@ -108,6 +130,24 @@ export const MessageItem = ({ message }) => {
                   <span>({Math.round(message.file_size / 1024)}KB)</span>
                 )}
               </a>
+            </div>
+          )}
+          {message.reply_to_message && (
+            <div
+              style={{
+                borderLeft: '3px solid rgba(0,0,0,0.2)',
+                paddingLeft: 8,
+                marginBottom: 6,
+                fontSize: 12,
+                opacity: 0.8
+              }}
+            >
+              <strong>
+                {message.reply_to_message.sender_username}
+              </strong>
+              <div>
+                {message.reply_to_message.content}
+              </div>
             </div>
           )}
           {message.content}

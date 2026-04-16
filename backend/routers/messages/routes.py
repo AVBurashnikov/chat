@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import List
 
 from fastapi import APIRouter, Depends, File, HTTPException, status, UploadFile
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 import auth as auth_utils
 import models
@@ -63,6 +63,7 @@ async def list_messages(
     # Get messages
     messages = (
         db.query(models.Message, models.User.username)
+        .options(joinedload(models.Message.reply_to_message))
         .join(models.User, models.User.id == models.Message.sender_id)
         .filter(models.Message.chat_id == chat_id)
         .order_by(models.Message.created_at.asc())
@@ -109,6 +110,7 @@ async def send_message(
         chat_id=chat_id,
         sender_id=current_user.id,
         content=content,
+        reply_to=message_in.reply_to,
     )
     db.add(message)
     db.commit()
@@ -164,6 +166,7 @@ async def upload_file_message(
         chat_id: int,
         file: UploadFile = File(...),
         content: str = "",
+        reply_to: int | None = None,
         db: Session = Depends(get_db),
         current_user: models.User = Depends(
             auth_utils.get_current_active_user
@@ -189,6 +192,22 @@ async def upload_file_message(
 
     # Check membership
     check_chat_membership(db, chat_id, current_user.id)
+
+    # Validate reply message
+    if reply_to:
+        replied = (
+            db.query(models.Message)
+            .filter(
+                models.Message.id == reply_to,
+                models.Message.chat_id == chat_id
+            )
+            .first()
+        )
+        if not replied:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid reply message"
+            )
 
     # Validate file size (max 10MB)
     if file.size > 10 * 1024 * 1024:
@@ -220,6 +239,7 @@ async def upload_file_message(
         chat_id=chat_id,
         sender_id=current_user.id,
         content=sanitized_content,
+        reply_to=reply_to,
         file_url=file_url,
         file_name=file.filename,
         file_type=file.content_type,

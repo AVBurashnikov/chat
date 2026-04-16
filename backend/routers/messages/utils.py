@@ -100,6 +100,12 @@ def build_message_read_response(
                 sender_id=message.sender_id,
                 sender_username=username,
                 content=message.content,
+                reply_to=message.reply_to,
+                reply_to_message=(
+                    schemas.MessageReply.from_orm(message.reply_to_message)
+                    if message.reply_to_message
+                    else None
+                ),
                 created_at=message.created_at,
                 delivered_at=message.delivered_at,
                 read_at=message.read_at,

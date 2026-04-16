@@ -18,6 +18,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
     enabled: !!chatId,
   });
   const [socket, setSocket] = useState(null);
+  const [replyTo, setReplyTo] = useState(null);
 
   useEffect(() => {
     if (!chatId) return;
@@ -108,7 +109,13 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
       return;
     }
 
-    socket.send(JSON.stringify({ content: text }));
+    socket.send(
+      JSON.stringify({ 
+        content: text, 
+        reply_to: replyTo?.id || null 
+      })
+    );
+    setReplyTo(null);
   };
 
   const handleSendFile = async (file, content) => {
@@ -175,8 +182,17 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
             background: 'var(--bg-primary)',
           }}
       >
-        <MessageList messages={messages} />
-        <MessageInput onSend={handleSend} onSendFile={handleSendFile} disabled={!socket} isMobile={isMobile} onMenuOpen={onMenuOpen}/>
+        <MessageList 
+          messages={messages} 
+          onReply={setReplyTo} />
+        <MessageInput   
+          onSend={handleSend} 
+          onSendFile={handleSendFile} 
+          disabled={!socket} 
+          isMobile={isMobile} 
+          onMenuOpen={onMenuOpen}
+          replyTo={replyTo}
+          onCancelReply={() => setReplyTo(null)} />
       </div>
   );
 };

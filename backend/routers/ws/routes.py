@@ -36,6 +36,7 @@ class WSMessage(BaseModel):
     """WebSocket message schema."""
 
     content: constr(min_length=1, max_length=5000)  # type: ignore
+    reply_to: int | None = None
 
     @validator('content')
     def content_must_not_be_blank(cls, v):
@@ -160,6 +161,7 @@ async def websocket_chat(
             try:
                 message_input = WSMessage(**data)
                 content = message_input.content
+                reply_to = message_input.reply_to
             except ValueError as e:
                 await manager.send_personal(
                     chat_id,
@@ -177,6 +179,7 @@ async def websocket_chat(
                     user.username,
                     content,
                     db,
+                    reply_to=reply_to,
                 )
                 if payload:
                     await manager.broadcast(chat_id, payload)

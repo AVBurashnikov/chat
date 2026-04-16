@@ -78,7 +78,16 @@ class MessageBase(BaseModel):
 
 class MessageCreate(MessageBase):
     """Message creation schema."""
-    pass
+    reply_to: Optional[int] = None
+
+
+class MessageReply(BaseModel):
+    id: int
+    content: Optional[str] = None
+    sender_username: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
 
 class MessageRead(MessageBase):
@@ -91,6 +100,8 @@ class MessageRead(MessageBase):
     created_at: datetime
     delivered_at: Optional[datetime] = None
     read_at: Optional[datetime] = None
+    reply_to: Optional[int] = None
+    reply_to_message: Optional[MessageReply] = None
 
     class Config:
         from_attributes = True

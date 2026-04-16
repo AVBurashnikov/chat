@@ -4,7 +4,15 @@
 
 import { useState } from 'react';
 
-export const MessageInput = ({ onSend, onSendFile, disabled, isMobile, onMenuOpen }) => {
+export const MessageInput = ({ 
+  onSend, 
+  onSendFile, 
+  disabled, 
+  isMobile, 
+  onMenuOpen,
+  replyTo,
+  onCancelReply,
+ }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -39,7 +47,8 @@ export const MessageInput = ({ onSend, onSendFile, disabled, isMobile, onMenuOpe
     }
 
     // Send
-    onSend(trimmed);
+    onSend(trimmed, replyTo?.id);
+    onCancelReply?.();
     setMessage('');
   };
 
@@ -155,7 +164,29 @@ export const MessageInput = ({ onSend, onSendFile, disabled, isMobile, onMenuOpe
             accept="image/*,.pdf,.doc,.docx,.txt"
           />
         </label>
+        {replyTo && (
+          <div
+            style={{
+              padding: '8px',
+              borderLeft: '3px solid #0b93f6',
+              background: 'var(--bg-secondary)',
+              borderRadius: 6,
+              display: 'flex',
+              justifyContent: 'space-between'
+            }}
+          >
+            <div>
+              <strong>{replyTo.sender_username}</strong>
+              <div style={{ fontSize: 12 }}>
+                {replyTo.content}
+              </div>
+            </div>
 
+            <button type="button" onClick={onCancelReply}>
+              ✕
+            </button>
+          </div>
+        )}
         <input
           type="text"
           value={message}

@@ -93,6 +93,11 @@ def run_runtime_migrations():
                         text("ALTER TABLE messages ADD COLUMN file_size INTEGER")
                     )
                     app_logger.info("Added file_size column to messages table")
+                if "reply_to" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN reply_to INTEGER")
+                    )
+                    app_logger.info("Added reply_to column to messages table")    
     except Exception as e:
         app_logger.error(f"Error running migrations: {e}")
         raise

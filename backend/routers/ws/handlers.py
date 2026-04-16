@@ -73,6 +73,7 @@ async def handle_new_message(
     username: str,
     content: str,
     db: Session,
+    reply_to: int | None = None,
 ) -> Optional[dict]:
     """
     Handle new message - save to DB and prepare broadcast payload.
@@ -95,6 +96,19 @@ async def handle_new_message(
         # Sanitize content
         safe_content = html.escape(content)
 
+        reply_message = None
+
+        if reply_to:
+            reply_message = (
+                db.query(models.Message)
+                .join(models.User, models.User.id == models.Message.sender_id)
+                .filter(
+                    models.Message.id == reply_to,
+                    models.Message.chat_id == chat_id
+                )
+                .first()
+            )
+
         # Check if message should be marked as delivered
         delivered = manager.has_other_connections(chat_id, user_id)
 
@@ -104,6 +118,7 @@ async def handle_new_message(
             sender_id=user_id,
             content=safe_content,
             delivered_at=datetime.utcnow() if delivered else None,
+            reply_to=reply_to,
         )
         db.add(message)
         db.commit()
@@ -120,6 +135,12 @@ async def handle_new_message(
             "created_at": message.created_at.isoformat(),
             "delivered_at": message.delivered_at.isoformat() if message.delivered_at else None,
             "read_at": message.read_at.isoformat() if message.read_at else None,
+            "reply_to": message.reply_to,
+            "reply_to_message": {
+                "id": reply_message[0].id,
+                "content": reply_message[0].content,
+                "sender_username": reply_message[1],
+            } if reply_message else None,
         }
 
         return payload

@@ -5,7 +5,7 @@
 import { useMemo, useEffect, useRef } from 'react';
 import { MessageItem } from './MessageItem';
 
-export const MessageList = ({ messages }) => {
+export const MessageList = ({ messages, onReply }) => {
   const bottomRef = useRef(null);
 
   // Function to format date labels
@@ -66,7 +66,7 @@ export const MessageList = ({ messages }) => {
             {dateLabel}
           </div>
           {msgs.map((message) => (
-            <MessageItem key={message.id} message={message} />
+            <MessageItem key={message.id} message={message} onReply={onReply}/>
           ))}
         </div>
       ))}
