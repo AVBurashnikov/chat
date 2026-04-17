@@ -75,9 +75,6 @@ export const LoginPage = ({ onSwitch, onSuccess }) => {
         }}
       >
         <h2 style={{ margin: 0, fontSize: 22 }}>Вход</h2>
-        <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)' }}>
-          Введите логин и пароль
-        </p>
 
         <div>
           <label style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Логин</label>

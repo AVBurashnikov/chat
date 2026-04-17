@@ -69,7 +69,7 @@ export const MessageItem = ({ message, onReply }) => {
       style={{
         display: 'flex',
         justifyContent: mine ? 'flex-end' : 'flex-start',
-        marginBottom: 14,
+        marginBottom: 24,
         alignItems: 'flex-end',
         gap: 10,
       }}
@@ -104,7 +104,7 @@ export const MessageItem = ({ message, onReply }) => {
           alignItems: mine ? 'flex-end' : 'flex-start',
         }}
       >
-        {!mine && (
+        {/* {!mine && (
           <div
             style={{
               fontSize: 12,
@@ -116,7 +116,7 @@ export const MessageItem = ({ message, onReply }) => {
           >
             {message.sender_username}
           </div>
-        )}
+        )} */}
 
         <div
           style={{

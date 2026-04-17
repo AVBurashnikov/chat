@@ -10,10 +10,38 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 import models
-from routers.ws.manager import ConnectionManager
+from routers.ws.manager import ConnectionManager, notification_manager
 from routers.ws.status import broadcast_read_status, broadcast_multiple_read_statuses
 
 logger = logging.getLogger(__name__)
+
+
+async def notify_chat_participants(
+    db: Session,
+    chat_id: int,
+    sender_id: int,
+    payload: dict,
+) -> None:
+    """
+    Send notification payload to all chat participants except the sender.
+
+    Args:
+        db: Database session
+        chat_id: Chat ID
+        sender_id: Sender user ID
+        payload: Notification payload
+    """
+    recipient_ids = (
+        db.query(models.ChatUser.user_id)
+        .filter(
+            models.ChatUser.chat_id == chat_id,
+            models.ChatUser.user_id != sender_id,
+        )
+        .all()
+    )
+
+    for (recipient_id,) in recipient_ids:
+        await notification_manager.send_to_user(recipient_id, payload)
 
 
 async def handle_read_receipt(
@@ -154,6 +182,21 @@ async def handle_new_message(
             "reply_to": message.reply_to,
             "reply_to_message": reply_payload
         }
+
+        await notify_chat_participants(
+            db,
+            chat_id,
+            user_id,
+            {
+                "type": "new_message",
+                "chat_id": message.chat_id,
+                "message_id": message.id,
+                "sender_id": message.sender_id,
+                "sender_username": username,
+                "preview": message.content,
+                "created_at": message.created_at.isoformat(),
+            },
+        )
 
         return payload
 

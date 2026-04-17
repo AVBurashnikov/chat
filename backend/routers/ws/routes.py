@@ -1,10 +1,9 @@
 """
-WebSocket endpoint for real-time messaging.
+WebSocket endpoints for real-time messaging and notifications.
 """
 
 import asyncio
 import logging
-from datetime import datetime
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from jose import JWTError
@@ -15,7 +14,7 @@ import auth as auth_utils
 import models
 from db import get_db
 from config import security_logger
-from routers.ws.manager import ConnectionManager
+from routers.ws.manager import ConnectionManager, notification_manager
 from routers.ws.handlers import (
     handle_read_receipt,
     handle_new_message,
@@ -28,7 +27,7 @@ logger = logging.getLogger(__name__)
 # Track online users
 ONLINE_USERS: set[int] = set()
 
-# Global connection manager
+# Global chat connection manager
 manager = ConnectionManager()
 
 
@@ -213,6 +212,66 @@ async def websocket_chat(
         manager.disconnect(chat_id, websocket)
         ONLINE_USERS.discard(user.id)
 
+    finally:
+        heartbeat_task.cancel()
+        try:
+            await websocket.close()
+        except Exception:
+            pass
+
+
+@router.websocket("/notifications")
+async def websocket_notifications(
+        websocket: WebSocket,
+        db: Session = Depends(get_db),
+):
+    """
+    WebSocket endpoint for user-scoped notifications.
+
+    Args:
+        websocket: WebSocket connection
+        db: Database session
+    """
+    token = websocket.query_params.get("token")
+    if not token:
+        await websocket.close(code=4401, reason="Missing token")
+        return
+
+    try:
+        user = auth_utils.get_current_user(db=db, token=token)
+    except JWTError:
+        await websocket.close(code=4401, reason="Invalid token")
+        return
+    except Exception as error:
+        logger.error(f"Unexpected error in notifications auth: {error}")
+        await websocket.close(code=4500, reason="Internal error")
+        return
+
+    await notification_manager.connect(user.id, websocket)
+    logger.info(f"User {user.username} connected to notifications")
+
+    async def send_heartbeat():
+        """Send periodic heartbeat to keep notification connection alive."""
+        while True:
+            try:
+                await asyncio.sleep(30)
+                await websocket.send_json({"type": "ping"})
+            except Exception:
+                break
+
+    heartbeat_task = asyncio.create_task(send_heartbeat())
+
+    try:
+        while True:
+            data = await websocket.receive_json()
+            if data.get("type") == "pong":
+                continue
+    except WebSocketDisconnect:
+        logger.info(f"User {user.username} disconnected from notifications")
+        notification_manager.disconnect(user.id, websocket)
+    except Exception as error:
+        logger.error(f"Unexpected error in notification WebSocket: {error}")
+        notification_manager.disconnect(user.id, websocket)
     finally:
         heartbeat_task.cancel()
         try:

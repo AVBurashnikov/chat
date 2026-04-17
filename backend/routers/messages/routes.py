@@ -21,6 +21,7 @@ from routers.messages.utils import (
     broadcast_read_statuses,
     build_message_read_response,
 )
+from routers.ws.handlers import notify_chat_participants
 
 router = APIRouter(prefix="/chats", tags=["messages"])
 logger = logging.getLogger(__name__)
@@ -117,6 +118,21 @@ async def send_message(
     db.refresh(message)
 
     logger.info(f"Message {message.id} created in chat {chat_id}")
+
+    await notify_chat_participants(
+        db,
+        chat_id,
+        current_user.id,
+        {
+            "type": "new_message",
+            "chat_id": message.chat_id,
+            "message_id": message.id,
+            "sender_id": current_user.id,
+            "sender_username": current_user.username,
+            "preview": message.content,
+            "created_at": message.created_at.isoformat(),
+        },
+    )
 
     return schemas.MessageRead(
         id=message.id,
@@ -250,6 +266,21 @@ async def upload_file_message(
     db.refresh(message)
 
     logger.info(f"File message {message.id} created in chat {chat_id}")
+
+    await notify_chat_participants(
+        db,
+        chat_id,
+        current_user.id,
+        {
+            "type": "new_message",
+            "chat_id": message.chat_id,
+            "message_id": message.id,
+            "sender_id": current_user.id,
+            "sender_username": current_user.username,
+            "preview": message.content,
+            "created_at": message.created_at.isoformat(),
+        },
+    )
 
     return schemas.MessageRead(
         id=message.id,

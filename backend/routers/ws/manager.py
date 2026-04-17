@@ -3,7 +3,7 @@ WebSocket connection manager for real-time messaging.
 """
 
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List, Set, Tuple
 
 from fastapi import WebSocket
 
@@ -96,3 +96,48 @@ class ConnectionManager:
             uid != user_id
             for _, uid in self.active_connections.get(chat_id, [])
         )
+
+
+class UserConnectionManager:
+    """Manage WebSocket connections by user."""
+
+    def __init__(self) -> None:
+        """Initialize empty user connections dictionary."""
+        self.active_connections: Dict[int, Set[WebSocket]] = {}
+
+    async def connect(self, user_id: int, websocket: WebSocket) -> None:
+        """Accept and store new user-scoped WebSocket connection."""
+        await websocket.accept()
+        self.active_connections.setdefault(user_id, set()).add(websocket)
+        logger.debug(f"Notification connection added for user {user_id}")
+
+    def disconnect(self, user_id: int, websocket: WebSocket) -> None:
+        """Remove WebSocket connection from user-scoped active list."""
+        connections = self.active_connections.get(user_id)
+        if not connections:
+            return
+
+        connections.discard(websocket)
+        if not connections:
+            del self.active_connections[user_id]
+        logger.debug(f"Notification connection removed for user {user_id}")
+
+    async def send_to_user(self, user_id: int, message: dict) -> None:
+        """Send a JSON payload to all active connections of a user."""
+        connections = list(self.active_connections.get(user_id, set()))
+        stale_connections: List[WebSocket] = []
+
+        for connection in connections:
+            try:
+                await connection.send_json(message)
+            except Exception as error:
+                logger.error(
+                    f"Error sending notification to user {user_id}: {error}"
+                )
+                stale_connections.append(connection)
+
+        for connection in stale_connections:
+            self.disconnect(user_id, connection)
+
+
+notification_manager = UserConnectionManager()
