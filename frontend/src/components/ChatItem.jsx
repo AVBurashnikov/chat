@@ -40,9 +40,12 @@ export const ChatItem = ({
     : 'No messages yet';
 
   const truncatedPreview =
-    lastMessagePreview.length > 20
-      ? `${lastMessagePreview.substring(0, 20)}...`
+    lastMessagePreview.length > 40
+      ? `${lastMessagePreview.substring(0, 40)}...`
       : lastMessagePreview;
+
+  const isSelected = chat.id === selectedId;
+  const isMenuOpen = openMenuChatId === chat.id;
 
   return (
     <div
@@ -50,11 +53,16 @@ export const ChatItem = ({
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
-        gap: 4,
-        marginBottom: 4,
-        borderRadius: 10,
-        background:
-          chat.id === selectedId ? 'var(--gradient-selected)' : 'transparent',
+        gap: 8,
+        marginBottom: 8,
+        borderRadius: 18,
+        background: isSelected ? 'var(--gradient-selected)' : 'transparent',
+        border: `1px solid ${
+          isSelected ? 'rgba(125,211,252,0.18)' : 'var(--border)'
+        }`,
+        boxShadow: isSelected ? 'var(--shadow-card)' : 'var(--surface-glow)',
+        overflow: 'visible',
+        zIndex: isMenuOpen ? 30 : 1,
       }}
     >
       <button
@@ -63,18 +71,15 @@ export const ChatItem = ({
         style={{
           flex: 1,
           textAlign: 'left',
-          padding: '10px',
-          borderRadius: 10,
+          padding: '14px',
+          borderRadius: 18,
           border: 'none',
           cursor: 'pointer',
           background: 'transparent',
-          color:
-            chat.id === selectedId
-              ? 'var(--text-primary)'
-              : 'var(--text-secondary)',
+          color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
           display: 'flex',
           flexDirection: 'column',
-          gap: 6,
+          gap: 8,
         }}
       >
         <div
@@ -85,25 +90,26 @@ export const ChatItem = ({
             gap: 8,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span
               style={{
                 display: 'inline-block',
-                width: 8,
-                height: 8,
+                width: 10,
+                height: 10,
                 borderRadius: '50%',
                 background: chat.other_online
                   ? 'var(--online-dot)'
                   : 'var(--offline-dot)',
+                boxShadow: chat.other_online
+                  ? '0 0 16px rgba(34,197,94,0.45)'
+                  : 'none',
               }}
             />
             <span
               style={{
-                fontWeight: 600,
-                color:
-                  chat.id === selectedId
-                    ? 'var(--text-primary)'
-                    : 'var(--text-secondary)',
+                fontWeight: 700,
+                fontSize: 14,
+                color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
               }}
             >
               {chat.title || `Chat #${chat.id}`}
@@ -112,11 +118,16 @@ export const ChatItem = ({
               <span
                 style={{
                   marginLeft: 6,
-                  padding: '2px 6px',
+                  padding: '3px 7px',
                   borderRadius: 999,
-                  background: 'rgba(255,255,255,0.08)',
-                  color: 'var(--text-tertiary)',
+                  background: isSelected
+                    ? 'rgba(255,255,255,0.14)'
+                    : 'var(--accent-bg)',
+                  color: isSelected
+                    ? 'rgba(255,255,255,0.86)'
+                    : 'var(--text-secondary)',
                   fontSize: 10,
+                  fontWeight: 700,
                 }}
               >
                 Muted
@@ -127,12 +138,14 @@ export const ChatItem = ({
           {chat.unread_count > 0 && (
             <span
               style={{
-                flexShrink: 0,
-                padding: '0 6px',
+                minWidth: 22,
+                padding: '2px 7px',
                 borderRadius: 999,
                 background: 'var(--unread-bg)',
                 color: 'var(--unread-text)',
                 fontSize: 10,
+                fontWeight: 800,
+                textAlign: 'center',
               }}
             >
               {chat.unread_count}
@@ -145,24 +158,36 @@ export const ChatItem = ({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            gap: 8,
+            gap: 10,
           }}
         >
           <div
             style={{
               flex: 1,
               fontSize: 12,
-              color: 'var(--text-tertiary)',
+              lineHeight: 1.4,
+              color: isSelected
+                ? 'rgba(243,247,255,0.9)'
+                : 'var(--text-secondary)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
+              fontWeight: isSelected ? 600 : 500,
             }}
           >
             {truncatedPreview}
           </div>
 
           {lastMessageTime && (
-            <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+            <span
+              style={{
+                fontSize: 11,
+                color: isSelected
+                  ? 'rgba(243,247,255,0.72)'
+                  : 'var(--text-muted)',
+                fontWeight: 700,
+              }}
+            >
               {lastMessageTime}
             </span>
           )}
@@ -175,24 +200,29 @@ export const ChatItem = ({
         title="Chat actions"
         aria-label="Chat actions"
         style={{
-          marginRight: 10,
-          width: 28,
-          height: 28,
+          marginRight: 12,
+          width: 34,
+          height: 34,
           borderRadius: 999,
-          border: '1px solid var(--text-primary)',
+          border: '1px solid var(--border)',
           cursor: 'pointer',
-          background: 'transparent',
-          color: 'var(--text-primary)',
+          background: isSelected ? 'rgba(255,255,255,0.12)' : 'var(--bg-form)',
+          color: isSelected
+            ? 'rgba(255,255,255,0.92)'
+            : 'var(--text-secondary)',
           fontSize: 18,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          boxShadow: 'var(--surface-glow)',
+          position: 'relative',
+          zIndex: 2,
         }}
       >
         ⋮
       </button>
 
-      {openMenuChatId === chat.id && (
+      {isMenuOpen && (
         <ChatDropdown
           chatId={chat.id}
           muted={chat.muted}

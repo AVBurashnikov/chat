@@ -8,6 +8,7 @@ const ICONS = {
   attach: '📎',
   close: '✕',
   menu: '☰',
+  send: '➜',
 };
 
 export const MessageInput = ({
@@ -83,10 +84,13 @@ export const MessageInput = ({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 8,
-        padding: '12px 16px',
+        gap: 10,
+        padding: '14px 18px 18px',
         borderTop: '1px solid var(--border)',
-        background: 'var(--bg-form)',
+        background:
+          'linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--bg-form)',
+        backdropFilter: 'blur(18px)',
+        WebkitBackdropFilter: 'blur(18px)',
       }}
     >
       {selectedFile && (
@@ -94,25 +98,68 @@ export const MessageInput = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
-            padding: '8px 12px',
+            justifyContent: 'space-between',
+            gap: 12,
+            padding: '12px 14px',
             background: 'var(--bg-secondary)',
-            borderRadius: 8,
+            borderRadius: 16,
             border: '1px solid var(--border)',
+            boxShadow: 'var(--surface-glow)',
           }}
         >
-          <span style={{ fontSize: 14, color: 'var(--text-primary)' }}>
-            {ICONS.attach} {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(1)}MB)
-          </span>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              minWidth: 0,
+            }}
+          >
+            <div
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 12,
+                background: 'var(--accent-bg)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--accent)',
+                flexShrink: 0,
+              }}
+            >
+              {ICONS.attach}
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {selectedFile.name}
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                {(selectedFile.size / 1024 / 1024).toFixed(1)} MB
+              </div>
+            </div>
+          </div>
           <button
             type="button"
             onClick={removeFile}
+            aria-label="Remove selected file"
             style={{
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
               background: 'transparent',
-              border: 'none',
+              border: '1px solid var(--border)',
               color: 'var(--danger)',
-              cursor: 'pointer',
-              fontSize: 16,
+              fontSize: 15,
             }}
           >
             {ICONS.close}
@@ -123,37 +170,57 @@ export const MessageInput = ({
       {replyTo && (
         <div
           style={{
-            padding: '8px',
-            borderLeft: '3px solid #0b93f6',
+            padding: '12px 14px',
+            borderLeft: '3px solid var(--accent-strong)',
             background: 'var(--bg-secondary)',
-            borderRadius: 6,
+            borderRadius: 16,
             display: 'flex',
-            gap: 8,
+            gap: 12,
             justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            borderTopLeftRadius: 10,
+            borderBottomLeftRadius: 10,
+            boxShadow: 'var(--surface-glow)',
           }}
         >
-          <div>
-            <strong>{replyTo.sender_username}</strong>
+          <div style={{ minWidth: 0 }}>
             <div
               style={{
                 fontSize: 12,
+                fontWeight: 800,
+                color: 'var(--accent)',
+                marginBottom: 4,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+              }}
+            >
+              Replying to {replyTo.sender_username}
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                color: 'var(--text-secondary)',
                 wordBreak: 'break-word',
               }}
             >
-              {replyTo.content.length < 50
+              {replyTo.content.length < 90
                 ? replyTo.content
-                : `${replyTo.content.substring(0, 50)}...`}
+                : `${replyTo.content.substring(0, 90)}...`}
             </div>
           </div>
           <button
             type="button"
             onClick={onCancelReply}
+            aria-label="Cancel reply"
             style={{
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
               background: 'transparent',
-              border: 'none',
+              border: '1px solid var(--border)',
               color: 'var(--danger)',
-              cursor: 'pointer',
-              fontSize: 16,
+              fontSize: 15,
+              flexShrink: 0,
             }}
           >
             {ICONS.close}
@@ -162,28 +229,49 @@ export const MessageInput = ({
       )}
 
       {error && (
-        <div style={{ color: 'var(--danger)', fontSize: 12, marginBottom: 4 }}>
+        <div
+          style={{
+            color: 'var(--danger)',
+            fontSize: 12,
+            padding: '10px 12px',
+            borderRadius: 12,
+            background: 'var(--danger-bg)',
+            border: '1px solid rgba(248, 113, 113, 0.18)',
+          }}
+        >
           {error}
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 10,
+          alignItems: 'center',
+          padding: 8,
+          borderRadius: 20,
+          border: '1px solid var(--border)',
+          background: 'var(--bg-secondary)',
+          boxShadow: 'var(--surface-glow)',
+        }}
+      >
         {isMobile && (
           <button
             type="button"
             onClick={onMenuOpen}
+            aria-label="Open chats"
             style={{
               background: 'var(--bg-form)',
               border: '1px solid var(--border)',
               borderRadius: '50%',
-              width: 40,
-              height: 40,
-              cursor: 'pointer',
+              width: 42,
+              height: 42,
               color: 'var(--text-primary)',
-              fontSize: 16,
+              fontSize: 17,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
             {ICONS.menu}
@@ -191,6 +279,7 @@ export const MessageInput = ({
         )}
 
         <label
+          aria-label="Attach file"
           style={{
             cursor: 'pointer',
             fontSize: 18,
@@ -198,11 +287,12 @@ export const MessageInput = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: 40,
-            height: 40,
+            width: 42,
+            height: 42,
             borderRadius: '50%',
             border: '1px solid var(--border)',
             background: 'var(--bg-form)',
+            flexShrink: 0,
           }}
         >
           {ICONS.attach}
@@ -213,41 +303,47 @@ export const MessageInput = ({
             accept="image/*,.pdf,.doc,.docx,.txt"
           />
         </label>
+
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder={selectedFile ? 'Add a caption...' : 'Type a message...'}
+          placeholder={selectedFile ? 'Add a caption...' : 'Write a message...'}
           style={{
             flex: 1,
-            padding: '10px 12px',
-            borderRadius: 8,
-            border: '1px solid var(--border)',
+            minWidth: 0,
+            padding: '13px 14px',
+            borderRadius: 14,
+            border: '1px solid transparent',
             background: 'var(--bg-input)',
             color: 'var(--text-primary)',
-            fontSize: 16,
+            fontSize: 15,
             boxSizing: 'border-box',
           }}
           disabled={disabled}
           maxLength="5000"
           autoComplete="off"
         />
+
         <button
           type="submit"
           disabled={disabled || (!message.trim() && !selectedFile)}
+          aria-label="Send message"
           style={{
-            padding: '10px 16px',
-            borderRadius: 8,
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
             background: 'var(--gradient-selected)',
-            color: 'var(--bg-primary)',
+            color: '#ffffff',
             border: 'none',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            fontWeight: 600,
-            fontSize: 13,
+            fontSize: 18,
+            fontWeight: 700,
             opacity: disabled ? 0.5 : 1,
+            boxShadow: 'var(--shadow-card)',
+            flexShrink: 0,
           }}
         >
-          Send
+          {ICONS.send}
         </button>
       </div>
     </form>

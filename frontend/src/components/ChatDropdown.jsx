@@ -3,13 +3,19 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteChat, toggleChatMute, archiveChat } from '../api/chats';
+import { archiveChat, deleteChat, toggleChatMute } from '../api/chats';
 
-export const ChatDropdown = ({ chatId, muted, onClose, onSelect, selectedId }) => {
+export const ChatDropdown = ({
+  chatId,
+  muted,
+  onClose,
+  onSelect,
+  selectedId,
+}) => {
   const queryClient = useQueryClient();
 
   const deleteChatMutation = useMutation({
-    mutationFn: (chatId) => deleteChat(chatId),
+    mutationFn: (currentChatId) => deleteChat(currentChatId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chats'] });
     },
@@ -54,64 +60,46 @@ export const ChatDropdown = ({ chatId, muted, onClose, onSelect, selectedId }) =
 
   const muteButtonLabel = muted ? 'Unmute chat' : 'Mute chat';
 
+  const buttonStyle = {
+    width: '100%',
+    padding: '12px 14px',
+    border: 'none',
+    background: 'transparent',
+    color: 'var(--text-primary)',
+    textAlign: 'left',
+    fontSize: 13,
+    fontWeight: 600,
+  };
+
   return (
     <div
       style={{
         position: 'absolute',
-        right: 0,
-        top: 'calc(100% + 6px)',
-        minWidth: 160,
-        background: 'var(--bg-primary)',
+        right: 8,
+        top: 'calc(100% - 2px)',
+        minWidth: 180,
+        background: 'var(--bg-surface)',
         border: '1px solid var(--border)',
-        borderRadius: 12,
-        boxShadow: '0 10px 28px rgba(0,0,0,0.08)',
+        borderRadius: 16,
+        boxShadow: 'var(--shadow-card)',
         zIndex: 100,
+        overflow: 'hidden',
+        backdropFilter: 'blur(18px)',
+        WebkitBackdropFilter: 'blur(18px)',
       }}
     >
-      <button
-        onClick={handleMute}
-        style={{
-          width: '100%',
-          padding: '10px 12px',
-          border: 'none',
-          borderRadius: 12,
-          background: 'transparent',
-          color: 'var(--text-primary)',
-          textAlign: 'left',
-          cursor: 'pointer',
-          fontSize: 13,
-        }}
-      >
+      <button type="button" onClick={handleMute} style={buttonStyle}>
         {muteButtonLabel}
       </button>
-      <button
-        onClick={handleArchive}
-        style={{
-          width: '100%',
-          padding: '10px 12px',
-          border: 'none',
-          borderRadius: 12,
-          background: 'transparent',
-          color: 'var(--text-primary)',
-          textAlign: 'left',
-          cursor: 'pointer',
-          fontSize: 13,
-        }}
-      >
+      <button type="button" onClick={handleArchive} style={buttonStyle}>
         Archive chat
       </button>
       <button
+        type="button"
         onClick={handleDelete}
         style={{
-          width: '100%',
-          padding: '10px 12px',
-          border: 'none',
-          borderRadius: 12,
-          background: 'transparent',
-          color: 'var(--text-danger)',
-          textAlign: 'left',
-          cursor: 'pointer',
-          fontSize: 13,
+          ...buttonStyle,
+          color: 'var(--danger)',
         }}
       >
         Delete chat

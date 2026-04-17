@@ -141,6 +141,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
           color: 'var(--text-muted)',
           background: 'var(--bg-primary)',
           position: 'relative',
+          gap: 8,
         }}
       >
         {isMobile && (
@@ -155,7 +156,6 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
               borderRadius: '50%',
               width: 48,
               height: 48,
-              cursor: 'pointer',
               color: 'var(--text-primary)',
               fontSize: 18,
               display: 'flex',
@@ -167,7 +167,12 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
             ☰
           </button>
         )}
-        Выберите чат слева
+        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-secondary)' }}>
+          Select a chat
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+          Choose a conversation from the sidebar to start messaging.
+        </div>
       </div>
     );
   }
@@ -179,8 +184,18 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
         display: 'flex',
         flexDirection: 'column',
         background: 'var(--bg-primary)',
+        position: 'relative',
       }}
     >
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'radial-gradient(circle at top right, rgba(14,165,233,0.07), transparent 28%)',
+          pointerEvents: 'none',
+        }}
+      />
       <MessageList messages={messages} onReply={setReplyTo} />
       <MessageInput
         onSend={handleSend}

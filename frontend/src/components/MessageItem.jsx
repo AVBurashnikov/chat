@@ -26,18 +26,18 @@ export const MessageItem = ({ message, onReply }) => {
     ? message.read_at
       ? {
           icon: STATUS_ICONS.delivered,
-          color: '#0b93f6',
+          color: '#7dd3fc',
           title: 'Прочитано',
         }
       : message.delivered_at
         ? {
             icon: STATUS_ICONS.delivered,
-            color: 'var(--text-muted)',
+            color: 'rgba(243,247,255,0.72)',
             title: 'Доставлено',
           }
         : {
             icon: STATUS_ICONS.sent,
-            color: 'var(--text-muted)',
+            color: 'rgba(243,247,255,0.72)',
             title: 'Отправлено',
           }
     : null;
@@ -69,14 +69,16 @@ export const MessageItem = ({ message, onReply }) => {
       style={{
         display: 'flex',
         justifyContent: mine ? 'flex-end' : 'flex-start',
-        marginBottom: 6,
+        marginBottom: 14,
+        alignItems: 'flex-end',
+        gap: 10,
       }}
     >
       {!mine && (
         <div
           style={{
-            width: 32,
-            height: 32,
+            width: 36,
+            height: 36,
             borderRadius: '50%',
             background: 'var(--avatar-bg)',
             color: 'var(--text-primary)',
@@ -84,7 +86,9 @@ export const MessageItem = ({ message, onReply }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginRight: 8,
+            fontWeight: 800,
+            flexShrink: 0,
+            boxShadow: 'var(--surface-glow)',
           }}
         >
           {initial}
@@ -93,35 +97,88 @@ export const MessageItem = ({ message, onReply }) => {
 
       <div
         style={{
-          maxWidth: '70%',
+          maxWidth: 'min(70%, 680px)',
           wordBreak: 'break-word',
           display: 'flex',
           flexDirection: 'column',
           alignItems: mine ? 'flex-end' : 'flex-start',
         }}
       >
+        {!mine && (
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              color: 'var(--text-muted)',
+              marginBottom: 5,
+              paddingLeft: 4,
+            }}
+          >
+            {message.sender_username}
+          </div>
+        )}
+
         <div
           style={{
-            padding: '8px 12px',
-            borderRadius: 16,
-            borderBottomRightRadius: mine ? 4 : 16,
-            borderBottomLeftRadius: mine ? 16 : 4,
+            padding: '12px 14px',
+            borderRadius: 22,
+            borderBottomRightRadius: mine ? 8 : 22,
+            borderBottomLeftRadius: mine ? 22 : 8,
             background: mine ? 'var(--msg-own)' : 'var(--msg-other)',
             color: mine ? 'var(--msg-text-own)' : 'var(--msg-text-other)',
             fontSize: 14,
+            lineHeight: 1.5,
             boxShadow: 'var(--shadow-card)',
+            border: `1px solid ${
+              mine ? 'rgba(255,255,255,0.08)' : 'var(--border)'
+            }`,
+            overflow: 'hidden',
           }}
         >
+          {message.reply_to_message && (
+            <div
+              style={{
+                borderLeft: `3px solid ${
+                  mine ? 'rgba(255,255,255,0.55)' : 'var(--accent-strong)'
+                }`,
+                paddingLeft: 10,
+                marginBottom: 10,
+                fontSize: 12,
+                borderRadius: 2,
+                color: mine
+                  ? 'rgba(255,255,255,0.86)'
+                  : 'var(--text-secondary)',
+                background: mine
+                  ? 'rgba(255,255,255,0.08)'
+                  : 'rgba(125,211,252,0.08)',
+                paddingTop: 8,
+                paddingBottom: 8,
+                paddingRight: 8,
+              }}
+            >
+              <strong style={{ display: 'block', marginBottom: 2 }}>
+                {message.reply_to_message.sender_username}
+              </strong>
+              <div>
+                {message.reply_to_message.content.length < 80
+                  ? message.reply_to_message.content
+                  : `${message.reply_to_message.content.substring(0, 80)}...`}
+              </div>
+            </div>
+          )}
+
           {message.file_url && message.file_type?.startsWith('image/') && (
-            <div style={{ marginBottom: 8 }}>
+            <div style={{ marginBottom: message.content ? 10 : 0 }}>
               <img
                 src={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`}
                 alt={message.file_name}
                 style={{
                   maxWidth: '100%',
-                  maxHeight: 200,
-                  borderRadius: 8,
+                  maxHeight: 260,
+                  display: 'block',
+                  borderRadius: 16,
                   cursor: 'pointer',
+                  boxShadow: '0 12px 24px rgba(2, 6, 23, 0.22)',
                 }}
                 onClick={() =>
                   window.open(
@@ -134,7 +191,7 @@ export const MessageItem = ({ message, onReply }) => {
           )}
 
           {message.file_url && !message.file_type?.startsWith('image/') && (
-            <div style={{ marginBottom: 8 }}>
+            <div style={{ marginBottom: message.content ? 10 : 0 }}>
               <a
                 href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`}
                 target="_blank"
@@ -142,39 +199,28 @@ export const MessageItem = ({ message, onReply }) => {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
-                  padding: '6px 10px',
-                  background: 'rgba(0,0,0,0.1)',
-                  borderRadius: 6,
+                  gap: 10,
+                  padding: '10px 12px',
+                  background: mine
+                    ? 'rgba(255,255,255,0.12)'
+                    : 'rgba(125,211,252,0.08)',
+                  borderRadius: 14,
                   textDecoration: 'none',
                   color: 'inherit',
                   fontSize: 12,
+                  border: '1px solid rgba(255,255,255,0.08)',
                 }}
               >
-                📎 {message.file_name}
-                {message.file_size && (
-                  <span>({Math.round(message.file_size / 1024)}KB)</span>
-                )}
+                <span style={{ fontSize: 16 }}>📎</span>
+                <span style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontWeight: 700 }}>{message.file_name}</span>
+                  {message.file_size && (
+                    <span style={{ opacity: 0.75 }}>
+                      {Math.round(message.file_size / 1024)} KB
+                    </span>
+                  )}
+                </span>
               </a>
-            </div>
-          )}
-
-          {message.reply_to_message && (
-            <div
-              style={{
-                borderLeft: '3px solid rgba(0,0,0,0.2)',
-                paddingLeft: 8,
-                marginBottom: 6,
-                fontSize: 12,
-                opacity: 0.8,
-              }}
-            >
-              <strong>{message.reply_to_message.sender_username}</strong>
-              <div>
-                {message.reply_to_message.content.length < 50
-                  ? message.reply_to_message.content
-                  : `${message.reply_to_message.content.substring(0, 50)}...`}
-              </div>
             </div>
           )}
 
@@ -183,8 +229,9 @@ export const MessageItem = ({ message, onReply }) => {
 
         <div
           style={{
-            marginTop: 2,
-            fontSize: 10,
+            marginTop: 6,
+            paddingInline: 6,
+            fontSize: 11,
             color: 'var(--text-muted)',
             display: 'flex',
             alignItems: 'center',
@@ -196,9 +243,10 @@ export const MessageItem = ({ message, onReply }) => {
             <span
               title={statusInfo.title}
               style={{
-                fontSize: 10,
+                fontSize: 11,
                 color: statusInfo.color,
-                fontWeight: 600,
+                fontWeight: 700,
+                letterSpacing: '0.03em',
               }}
             >
               {statusInfo.icon}
@@ -210,16 +258,18 @@ export const MessageItem = ({ message, onReply }) => {
       {mine && (
         <div
           style={{
-            width: 32,
-            height: 32,
+            width: 36,
+            height: 36,
             borderRadius: '50%',
             background: 'var(--avatar-own-bg)',
-            color: '#e5e7eb',
+            color: '#f3f7ff',
             fontSize: 14,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginLeft: 8,
+            fontWeight: 800,
+            flexShrink: 0,
+            boxShadow: 'var(--surface-glow)',
           }}
         >
           {(user?.username || '?')[0]?.toUpperCase()}
