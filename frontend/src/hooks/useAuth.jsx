@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const userData = await me();
         setUser(userData);
-      } catch (error) {
+      } catch {
         // Token invalid - clear it
         sessionStorage.removeItem('access_token');
         setUser(null);

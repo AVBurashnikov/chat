@@ -2,7 +2,7 @@
  * Chat window with WebSocket support
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMessages, sendFileMessage } from '../api/chats';
 import { useAuth } from '../hooks/useAuth';
@@ -23,7 +23,6 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   useEffect(() => {
     if (!chatId) return;
 
-    // Get token from sessionStorage or localStorage
     const token =
       sessionStorage.getItem('access_token') ||
       localStorage.getItem('token');
@@ -34,12 +33,10 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
     }
 
     const defaultHost = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`;
-    const WEBSOCKET_BASE_URL =
-      import.meta.env.VITE_WS_URL ||
-      defaultHost;
+    const websocketBaseUrl = import.meta.env.VITE_WS_URL || defaultHost;
 
     const ws = new WebSocket(
-      `${WEBSOCKET_BASE_URL.replace(/\/\/$/, '')}/ws/chats/${chatId}?token=${token}`
+      `${websocketBaseUrl.replace(/\/\/$/, '')}/ws/chats/${chatId}?token=${token}`
     );
 
     ws.onopen = () => {
@@ -52,16 +49,19 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
     ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
+
         if (msg.type === 'ping') {
           ws.send(JSON.stringify({ type: 'pong' }));
         } else if (msg.type === 'message') {
-          queryClient.setQueryData(
-            ['messages', chatId],
-            (old = []) => [...old, msg]
-          );
+          queryClient.setQueryData(['messages', chatId], (old = []) => [
+            ...old,
+            msg,
+          ]);
+
           if (msg.sender_id !== user?.id) {
             ws.send(JSON.stringify({ type: 'read' }));
           }
+
           queryClient.invalidateQueries({ queryKey: ['chats'] });
         } else if (msg.type === 'message_status') {
           queryClient.setQueryData(['messages', chatId], (old = []) =>
@@ -99,29 +99,28 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
 
   const handleSend = (text) => {
     if (!socket || socket.readyState !== WebSocket.OPEN) {
-      alert('Соединение не установлено. Пожалуйста, подождите или перезагрузите страницу.');
+      alert('Соединение еще не установлено. Подождите или перезагрузите страницу.');
       return;
     }
 
-    // Validate message length
     if (text.length > 5000) {
       alert('Message is too long');
       return;
     }
 
     socket.send(
-      JSON.stringify({ 
-        content: text, 
-        reply_to: replyTo?.id || null 
+      JSON.stringify({
+        content: text,
+        reply_to: replyTo?.id || null,
       })
     );
     setReplyTo(null);
   };
 
-  const handleSendFile = async (file, content) => {
+  const handleSendFile = async (file, content, replyToId) => {
     try {
-      await sendFileMessage(chatId, file, content);
-      // Refresh messages
+      await sendFileMessage(chatId, file, content, replyToId);
+      setReplyTo(null);
       queryClient.invalidateQueries({ queryKey: ['messages', chatId] });
       queryClient.invalidateQueries({ queryKey: ['chats'] });
     } catch (error) {
@@ -174,25 +173,24 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   }
 
   return (
-      <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            background: 'var(--bg-primary)',
-          }}
-      >
-        <MessageList 
-          messages={messages} 
-          onReply={setReplyTo} />
-        <MessageInput   
-          onSend={handleSend} 
-          onSendFile={handleSendFile} 
-          disabled={!socket} 
-          isMobile={isMobile} 
-          onMenuOpen={onMenuOpen}
-          replyTo={replyTo}
-          onCancelReply={() => setReplyTo(null)} />
-      </div>
+    <div
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'var(--bg-primary)',
+      }}
+    >
+      <MessageList messages={messages} onReply={setReplyTo} />
+      <MessageInput
+        onSend={handleSend}
+        onSendFile={handleSendFile}
+        disabled={!socket}
+        isMobile={isMobile}
+        onMenuOpen={onMenuOpen}
+        replyTo={replyTo}
+        onCancelReply={() => setReplyTo(null)}
+      />
+    </div>
   );
 };

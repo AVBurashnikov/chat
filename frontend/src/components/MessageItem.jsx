@@ -2,41 +2,60 @@
  * Component for a single message in the chat
  */
 
-import { useAuth } from '../hooks/useAuth';
 import { useRef } from 'react';
+import { useAuth } from '../hooks/useAuth';
+
+const STATUS_ICONS = {
+  sent: '✓',
+  delivered: '✓✓',
+};
 
 export const MessageItem = ({ message, onReply }) => {
   const { user } = useAuth();
 
   const mine = user && message.sender_id === user.id;
-  // Ensure created_at is treated as UTC
-  const utcDate = new Date(message.created_at + (message.created_at.includes('Z') ? '' : 'Z'));
+  const utcDate = new Date(
+    message.created_at + (message.created_at.includes('Z') ? '' : 'Z')
+  );
   const time = utcDate.toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
   });
+
   const statusInfo = mine
     ? message.read_at
-      ? { icon: '✓✓', color: '#0b93f6', title: 'Прочитано' }
+      ? {
+          icon: STATUS_ICONS.delivered,
+          color: '#0b93f6',
+          title: 'Прочитано',
+        }
       : message.delivered_at
-        ? { icon: '✓✓', color: 'var(--text-muted)', title: 'Доставлено' }
-        : { icon: '✓', color: 'var(--text-muted)', title: 'Отправлено' }
+        ? {
+            icon: STATUS_ICONS.delivered,
+            color: 'var(--text-muted)',
+            title: 'Доставлено',
+          }
+        : {
+            icon: STATUS_ICONS.sent,
+            color: 'var(--text-muted)',
+            title: 'Отправлено',
+          }
     : null;
+
   const initial = (message.sender_username || '?')[0]?.toUpperCase();
+  const touchStartX = useRef(0);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
     onReply(message);
   };
 
-  const touchStartX = useRef(0);
-
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
   };
 
   const handleTouchEnd = (e) => {
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
     if (diff > 50) {
       onReply(message);
     }
@@ -71,6 +90,7 @@ export const MessageItem = ({ message, onReply }) => {
           {initial}
         </div>
       )}
+
       <div
         style={{
           maxWidth: '70%',
@@ -103,10 +123,16 @@ export const MessageItem = ({ message, onReply }) => {
                   borderRadius: 8,
                   cursor: 'pointer',
                 }}
-                onClick={() => window.open(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`, '_blank')}
+                onClick={() =>
+                  window.open(
+                    `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`,
+                    '_blank'
+                  )
+                }
               />
             </div>
           )}
+
           {message.file_url && !message.file_type?.startsWith('image/') && (
             <div style={{ marginBottom: 8 }}>
               <a
@@ -132,6 +158,7 @@ export const MessageItem = ({ message, onReply }) => {
               </a>
             </div>
           )}
+
           {message.reply_to_message && (
             <div
               style={{
@@ -139,21 +166,21 @@ export const MessageItem = ({ message, onReply }) => {
                 paddingLeft: 8,
                 marginBottom: 6,
                 fontSize: 12,
-                opacity: 0.8
+                opacity: 0.8,
               }}
             >
-              <strong>
-                {message.reply_to_message.sender_username}
-              </strong>
+              <strong>{message.reply_to_message.sender_username}</strong>
               <div>
-                {message.reply_to_message.content.length < 50 
-                  ? message.reply_to_message.content 
+                {message.reply_to_message.content.length < 50
+                  ? message.reply_to_message.content
                   : `${message.reply_to_message.content.substring(0, 50)}...`}
               </div>
             </div>
           )}
+
           {message.content}
         </div>
+
         <div
           style={{
             marginTop: 2,
@@ -179,6 +206,7 @@ export const MessageItem = ({ message, onReply }) => {
           )}
         </div>
       </div>
+
       {mine && (
         <div
           style={{

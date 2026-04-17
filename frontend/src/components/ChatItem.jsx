@@ -2,12 +2,17 @@
  * Component for a single chat item in the chat list
  */
 
-import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { markChatRead } from '../api/chats';
 import { ChatDropdown } from './ChatDropdown';
 
-export const ChatItem = ({ chat, selectedId, onSelect, openMenuChatId, setOpenMenuChatId }) => {
+export const ChatItem = ({
+  chat,
+  selectedId,
+  onSelect,
+  openMenuChatId,
+  setOpenMenuChatId,
+}) => {
   const queryClient = useQueryClient();
 
   const handleSelect = () => {
@@ -34,6 +39,11 @@ export const ChatItem = ({ chat, selectedId, onSelect, openMenuChatId, setOpenMe
     ? `${chat.last_message_sender ? `${chat.last_message_sender}: ` : ''}${chat.last_message_text}`
     : 'No messages yet';
 
+  const truncatedPreview =
+    lastMessagePreview.length > 20
+      ? `${lastMessagePreview.substring(0, 20)}...`
+      : lastMessagePreview;
+
   return (
     <div
       style={{
@@ -42,28 +52,39 @@ export const ChatItem = ({ chat, selectedId, onSelect, openMenuChatId, setOpenMe
         alignItems: 'center',
         gap: 4,
         marginBottom: 4,
+        borderRadius: 10,
+        background:
+          chat.id === selectedId ? 'var(--gradient-selected)' : 'transparent',
       }}
     >
       <button
+        type="button"
         onClick={handleSelect}
         style={{
           flex: 1,
           textAlign: 'left',
-          padding: '10px 10px',
+          padding: '10px',
           borderRadius: 10,
           border: 'none',
           cursor: 'pointer',
-          background:
+          background: 'transparent',
+          color:
             chat.id === selectedId
-              ? 'var(--gradient-selected)'
-              : 'transparent',
-          color: chat.id === selectedId ? 'var(--text-primary)' : 'var(--text-secondary)',
+              ? 'var(--text-primary)'
+              : 'var(--text-secondary)',
           display: 'flex',
           flexDirection: 'column',
           gap: 6,
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span
               style={{
@@ -71,66 +92,62 @@ export const ChatItem = ({ chat, selectedId, onSelect, openMenuChatId, setOpenMe
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                background: chat.other_online ? 'var(--online-dot)' : 'var(--offline-dot)',
+                background: chat.other_online
+                  ? 'var(--online-dot)'
+                  : 'var(--offline-dot)',
               }}
             />
-            <span style={{ fontWeight: 600, color: chat.id === selectedId ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
+            <span
+              style={{
+                fontWeight: 600,
+                color:
+                  chat.id === selectedId
+                    ? 'var(--text-primary)'
+                    : 'var(--text-secondary)',
+              }}
+            >
               {chat.title || `Chat #${chat.id}`}
             </span>
             {chat.muted && (
-              <div>
-                <span style={{
+              <span
+                style={{
                   marginLeft: 6,
                   padding: '2px 6px',
                   borderRadius: 999,
                   background: 'rgba(255,255,255,0.08)',
                   color: 'var(--text-tertiary)',
                   fontSize: 10,
-                }}>
-                  Muted
-                </span>
-              </div>
-            )}
-          </div>
-          {chat.unread_count > 0 && (
-            <div>
-              <span
-                style={{
-                  flexShrink: 0,
-                  padding: '0 6px',
-                  borderRadius: 999,
-                  background: 'var(--unread-bg)',
-                  color: 'var(--unread-text)',
-                  fontSize: 10,
                 }}
               >
-                {chat.unread_count}
+                Muted
               </span>
-            </div>
-          )}
+            )}
+          </div>
 
-          <button
-            onClick={handleToggleMenu}
-            title="Chat actions"
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 999,
-              border: '1px solid var(--text-primary)',
-              cursor: 'pointer',
-              background: 'transparent',
-              color: 'var(--text-primary)',
-              fontSize: 18,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            ⋮
-          </button>
+          {chat.unread_count > 0 && (
+            <span
+              style={{
+                flexShrink: 0,
+                padding: '0 6px',
+                borderRadius: 999,
+                background: 'var(--unread-bg)',
+                color: 'var(--unread-text)',
+                fontSize: 10,
+              }}
+            >
+              {chat.unread_count}
+            </span>
+          )}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
           <div
             style={{
               flex: 1,
@@ -141,7 +158,7 @@ export const ChatItem = ({ chat, selectedId, onSelect, openMenuChatId, setOpenMe
               whiteSpace: 'nowrap',
             }}
           >
-            {lastMessagePreview.substring(0, 20) + '...'}
+            {truncatedPreview}
           </div>
 
           {lastMessageTime && (
@@ -150,6 +167,29 @@ export const ChatItem = ({ chat, selectedId, onSelect, openMenuChatId, setOpenMe
             </span>
           )}
         </div>
+      </button>
+
+      <button
+        type="button"
+        onClick={handleToggleMenu}
+        title="Chat actions"
+        aria-label="Chat actions"
+        style={{
+          marginRight: 10,
+          width: 28,
+          height: 28,
+          borderRadius: 999,
+          border: '1px solid var(--text-primary)',
+          cursor: 'pointer',
+          background: 'transparent',
+          color: 'var(--text-primary)',
+          fontSize: 18,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        ⋮
       </button>
 
       {openMenuChatId === chat.id && (

@@ -4,15 +4,21 @@
 
 import { useState } from 'react';
 
-export const MessageInput = ({ 
-  onSend, 
-  onSendFile, 
-  disabled, 
-  isMobile, 
+const ICONS = {
+  attach: '📎',
+  close: '✕',
+  menu: '☰',
+};
+
+export const MessageInput = ({
+  onSend,
+  onSendFile,
+  disabled,
+  isMobile,
   onMenuOpen,
   replyTo,
   onCancelReply,
- }) => {
+}) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -23,19 +29,19 @@ export const MessageInput = ({
 
     const trimmed = message.trim();
 
-    // If file is selected, send file message
     if (selectedFile) {
       if (trimmed.length > 5000) {
         setError('Message is too long');
         return;
       }
-      onSendFile(selectedFile, trimmed);
+
+      onSendFile(selectedFile, trimmed, replyTo?.id ?? null);
       setMessage('');
       setSelectedFile(null);
+      onCancelReply?.();
       return;
     }
 
-    // Regular text message
     if (!trimmed) {
       setError('Message cannot be empty');
       return;
@@ -46,7 +52,6 @@ export const MessageInput = ({
       return;
     }
 
-    // Send
     onSend(trimmed, replyTo?.id);
     onCancelReply?.();
     setMessage('');
@@ -54,15 +59,18 @@ export const MessageInput = ({
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Validate file size (10MB max)
-      if (file.size > 10 * 1024 * 1024) {
-        setError('File too large. Maximum size is 10MB.');
-        return;
-      }
-      setSelectedFile(file);
-      setError('');
+
+    if (!file) {
+      return;
     }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError('File too large. Maximum size is 10MB.');
+      return;
+    }
+
+    setSelectedFile(file);
+    setError('');
   };
 
   const removeFile = () => {
@@ -94,7 +102,7 @@ export const MessageInput = ({
           }}
         >
           <span style={{ fontSize: 14, color: 'var(--text-primary)' }}>
-            📎 {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(1)}MB)
+            {ICONS.attach} {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(1)}MB)
           </span>
           <button
             type="button"
@@ -107,7 +115,7 @@ export const MessageInput = ({
               fontSize: 16,
             }}
           >
-            ✕
+            {ICONS.close}
           </button>
         </div>
       )}
@@ -120,20 +128,21 @@ export const MessageInput = ({
             background: 'var(--bg-secondary)',
             borderRadius: 6,
             display: 'flex',
-            gap: '8px',
-            justifyContent: 'space-between'
+            gap: 8,
+            justifyContent: 'space-between',
           }}
         >
           <div>
             <strong>{replyTo.sender_username}</strong>
-            <div style={{ 
-              fontSize: 12,
-              wordBreak: 'break-word'
+            <div
+              style={{
+                fontSize: 12,
+                wordBreak: 'break-word',
               }}
             >
-              {replyTo.content.length < 50 
-                  ? replyTo.content 
-                  : `${replyTo.content.substring(0, 50)}...`}
+              {replyTo.content.length < 50
+                ? replyTo.content
+                : `${replyTo.content.substring(0, 50)}...`}
             </div>
           </div>
           <button
@@ -147,7 +156,7 @@ export const MessageInput = ({
               fontSize: 16,
             }}
           >
-            ✕
+            {ICONS.close}
           </button>
         </div>
       )}
@@ -177,7 +186,7 @@ export const MessageInput = ({
               justifyContent: 'center',
             }}
           >
-            ☰
+            {ICONS.menu}
           </button>
         )}
 
@@ -196,7 +205,7 @@ export const MessageInput = ({
             background: 'var(--bg-form)',
           }}
         >
-          📎
+          {ICONS.attach}
           <input
             type="file"
             onChange={handleFileSelect}
@@ -208,7 +217,7 @@ export const MessageInput = ({
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder={selectedFile ? "Add a caption..." : "Type a message..."}
+          placeholder={selectedFile ? 'Add a caption...' : 'Type a message...'}
           style={{
             flex: 1,
             padding: '10px 12px',
@@ -224,28 +233,23 @@ export const MessageInput = ({
           autoComplete="off"
         />
         <button
-            type="submit"
-            disabled={disabled || (!message.trim() && !selectedFile)}
-            style={{
-              padding: '10px 16px',
-              borderRadius: 8,
-              background: 'var(--gradient-selected)',
-              color: 'var(--bg-primary)',
-              border: 'none',
-              cursor: disabled ? 'not-allowed' : 'pointer',
-              fontWeight: 600,
-              fontSize: 13,
-              opacity: disabled ? 0.5 : 1,
-            }}
-          >
-            Send
+          type="submit"
+          disabled={disabled || (!message.trim() && !selectedFile)}
+          style={{
+            padding: '10px 16px',
+            borderRadius: 8,
+            background: 'var(--gradient-selected)',
+            color: 'var(--bg-primary)',
+            border: 'none',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            fontWeight: 600,
+            fontSize: 13,
+            opacity: disabled ? 0.5 : 1,
+          }}
+        >
+          Send
         </button>
       </div>
     </form>
   );
-      {error && (
-        <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 4 }}>
-          {error}
-        </div>
-      )}
 };

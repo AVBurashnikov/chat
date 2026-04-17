@@ -51,7 +51,7 @@ export const Layout = ({ children, theme = 'dark', onToggleTheme }) => {
           }}
         >
           <div style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
-            Chat Clone
+            Phantom
           </div>
           <button
             onClick={onToggleTheme}
