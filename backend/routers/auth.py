@@ -17,7 +17,7 @@ import schemas
 from db import get_db
 from config import settings, security_logger
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/api/auth", tags=["auth"])
 limiter = Limiter(key_func=get_remote_address)
 
 logger = logging.getLogger(__name__)

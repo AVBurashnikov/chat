@@ -23,7 +23,7 @@ from routers.messages.utils import (
 )
 from routers.ws.handlers import notify_chat_participants
 
-router = APIRouter(prefix="/chats", tags=["messages"])
+router = APIRouter(prefix="/api/chats", tags=["messages"])
 logger = logging.getLogger(__name__)
 
 

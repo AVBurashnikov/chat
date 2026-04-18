@@ -98,7 +98,7 @@ async def add_security_headers(request: Request, call_next):
 from fastapi.staticfiles import StaticFiles
 
 # Mount static files directory for uploaded files
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+app.mount("/api/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.include_router(auth_router.router)
 app.include_router(chats_router)
@@ -106,13 +106,13 @@ app.include_router(messages_router)
 app.include_router(ws_router)
 
 
-@app.get("/")
+@app.get("/api/")
 def read_root():
     """Health check endpoint."""
     return {"status": "ok"}
 
 
-@app.get("/health")
+@app.get("/api/health")
 def health_check():
     """Detailed health check endpoint."""
     db_status = check_db_connection()

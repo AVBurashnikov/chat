@@ -20,7 +20,7 @@ from routers.chats.utils import (
     get_other_participant,
 )
 
-router = APIRouter(prefix="/chats", tags=["chats"])
+router = APIRouter(prefix="/api/chats", tags=["chats"])
 logger = logging.getLogger(__name__)
 
 
