@@ -139,5 +139,9 @@ class UserConnectionManager:
         for connection in stale_connections:
             self.disconnect(user_id, connection)
 
+    def is_user_online(self, user_id: int) -> bool:
+        """Check whether user has active notification websocket connections."""
+        return bool(self.active_connections.get(user_id))
+
 
 notification_manager = UserConnectionManager()

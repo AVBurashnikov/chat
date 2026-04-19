@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 import models
 import schemas
-from routers.ws import ONLINE_USERS
+from routers.ws import notification_manager
 
 
 def get_other_participant(
@@ -62,7 +62,9 @@ def get_chat_title_and_online_status(
     other_online = False
     if chat.is_private:
         other = get_other_participant(db, chat.id, current_user_id)
-        other_online = bool(other and other.id in ONLINE_USERS)
+        other_online = bool(
+            other and notification_manager.is_user_online(other.id)
+        )
         title = other.username if other else f"Chat {chat.id}"
     else:
         title = chat.title or f"Chat {chat.id}"

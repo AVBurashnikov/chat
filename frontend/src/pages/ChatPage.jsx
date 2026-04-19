@@ -52,6 +52,17 @@ export const ChatPage = () => {
           return;
         }
 
+        if (payload.type === 'presence') {
+          queryClient.setQueryData(['chats'], (old = []) =>
+            old.map((chat) =>
+              chat.id === payload.chat_id
+                ? { ...chat, other_online: Boolean(payload.is_online) }
+                : chat
+            )
+          );
+          return;
+        }
+
         if (payload.type !== 'new_message') {
           return;
         }

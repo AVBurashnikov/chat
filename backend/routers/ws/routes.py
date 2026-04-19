@@ -31,6 +31,23 @@ ONLINE_USERS: set[int] = set()
 manager = ConnectionManager()
 
 
+def get_other_participant_for_presence(
+        db: Session,
+        chat_id: int,
+        current_user_id: int,
+):
+    """Local helper to avoid circular import with routers.chats.utils."""
+    return (
+        db.query(models.User)
+        .join(models.ChatUser, models.ChatUser.user_id == models.User.id)
+        .filter(
+            models.ChatUser.chat_id == chat_id,
+            models.User.id != current_user_id,
+        )
+        .first()
+    )
+
+
 class WSMessage(BaseModel):
     """WebSocket message schema."""
 
@@ -196,12 +213,9 @@ async def websocket_chat(
 
         # Check if user still has connections in other chats
         still_online = any(
-            any(
-                True
-                for connections in manager.active_connections.values()
-            )
-            for user_id in ONLINE_USERS
-            if user_id == user.id
+            uid == user.id
+            for connections in manager.active_connections.values()
+            for (_, uid) in connections
         )
 
         if not still_online:
@@ -250,6 +264,32 @@ async def websocket_notifications(
     await notification_manager.connect(user.id, websocket)
     logger.info(f"User {user.username} connected to notifications")
 
+    # Notify user's chat participants that this user is online
+    user_chats = (
+        db.query(models.Chat)
+        .join(models.ChatUser)
+        .filter(
+            models.ChatUser.user_id == user.id,
+            models.Chat.is_private.is_(True),
+            models.ChatUser.archived.is_(False),
+        )
+        .all()
+    )
+
+    for chat in user_chats:
+        other = get_other_participant_for_presence(db, chat.id, user.id)
+        if not other:
+            continue
+        await notification_manager.send_to_user(
+            other.id,
+            {
+                "type": "presence",
+                "chat_id": chat.id,
+                "user_id": user.id,
+                "is_online": True,
+            },
+        )
+
     async def send_heartbeat():
         """Send periodic heartbeat to keep notification connection alive."""
         while True:
@@ -269,9 +309,61 @@ async def websocket_notifications(
     except WebSocketDisconnect:
         logger.info(f"User {user.username} disconnected from notifications")
         notification_manager.disconnect(user.id, websocket)
+
+        # If user has no remaining notifications connections, broadcast offline
+        if not notification_manager.is_user_online(user.id):
+            user_chats = (
+                db.query(models.Chat)
+                .join(models.ChatUser)
+                .filter(
+                    models.ChatUser.user_id == user.id,
+                    models.Chat.is_private.is_(True),
+                    models.ChatUser.archived.is_(False),
+                )
+                .all()
+            )
+
+            for chat in user_chats:
+                other = get_other_participant_for_presence(db, chat.id, user.id)
+                if not other:
+                    continue
+                await notification_manager.send_to_user(
+                    other.id,
+                    {
+                        "type": "presence",
+                        "chat_id": chat.id,
+                        "user_id": user.id,
+                        "is_online": False,
+                    },
+                )
     except Exception as error:
         logger.error(f"Unexpected error in notification WebSocket: {error}")
         notification_manager.disconnect(user.id, websocket)
+        if not notification_manager.is_user_online(user.id):
+            user_chats = (
+                db.query(models.Chat)
+                .join(models.ChatUser)
+                .filter(
+                    models.ChatUser.user_id == user.id,
+                    models.Chat.is_private.is_(True),
+                    models.ChatUser.archived.is_(False),
+                )
+                .all()
+            )
+
+            for chat in user_chats:
+                other = get_other_participant_for_presence(db, chat.id, user.id)
+                if not other:
+                    continue
+                await notification_manager.send_to_user(
+                    other.id,
+                    {
+                        "type": "presence",
+                        "chat_id": chat.id,
+                        "user_id": user.id,
+                        "is_online": False,
+                    },
+                )
     finally:
         heartbeat_task.cancel()
         try:
