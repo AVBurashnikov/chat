@@ -1,0 +1,154 @@
+{
+  "project_context": {
+    "domain": "Social Apps / Productivity",
+    "app_type": "Messenger Dashboard App",
+    "theme": "Light & Dark Mode (with toggle)",
+    "archetype": "Archetype 3: Pastel & Soft (Light) / Archetype 5: Jewel & Luxury (Dark)",
+    "vibe": "Crystal Glassmorphism, Premium, Tactile, Modern"
+  },
+  "typography": {
+    "primary_font": "Outfit",
+    "secondary_font": "Manrope",
+    "font_install": "Add fonts from Google Fonts in index.css or via next/font. For raw React, import in index.css.",
+    "headings": {
+      "h1": "text-4xl sm:text-5xl font-light tracking-tight",
+      "h2": "text-2xl sm:text-3xl font-medium tracking-tight",
+      "h3": "text-xl font-semibold",
+      "h4": "text-lg font-semibold"
+    },
+    "body": "text-base leading-relaxed font-normal",
+    "small": "text-sm tracking-wide",
+    "labels": "uppercase text-xs font-bold tracking-[0.2em]"
+  },
+  "colors": {
+    "light_mode": {
+      "background_strategy": "Fixed background image using the light background image URL provided.",
+      "primary": "bg-indigo-500",
+      "primary_foreground": "text-white",
+      "glass_surface": "bg-white/70 backdrop-blur-2xl backdrop-saturate-150 border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]",
+      "glass_surface_hover": "hover:bg-white/80 transition-all duration-300",
+      "text_main": "text-slate-900",
+      "text_muted": "text-slate-500",
+      "border": "border-slate-200/50",
+      "accent": "bg-rose-400"
+    },
+    "dark_mode": {
+      "background_strategy": "Fixed background image using the dark background image URL provided.",
+      "primary": "bg-indigo-500",
+      "primary_foreground": "text-white",
+      "glass_surface": "bg-slate-950/60 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)]",
+      "glass_surface_hover": "hover:bg-slate-900/80 transition-all duration-300",
+      "text_main": "text-slate-50",
+      "text_muted": "text-slate-400",
+      "border": "border-white/10",
+      "accent": "bg-rose-500"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous Spacing. Use padding like p-6, p-8 to allow the glassmorphism to breathe. Do not crowd elements.",
+    "container": "h-screen w-full flex overflow-hidden p-4 sm:p-6 md:p-8 gap-6 relative z-10",
+    "sidebar": "w-full md:w-80 lg:w-96 flex flex-col gap-4 h-full flex-shrink-0 glass_surface rounded-3xl p-4 sm:p-6",
+    "main_chat": "flex-1 hidden md:flex flex-col h-full min-w-0 glass_surface rounded-3xl overflow-hidden"
+  },
+  "motion_and_interactions": {
+    "hover_states": "hover:-translate-y-1 hover:shadow-lg transition-all duration-300",
+    "active_states": "active:scale-[0.98] transition-transform",
+    "message_entrance": "animate-in slide-in-from-bottom-4 fade-in duration-300 ease-out fill-mode-both"
+  },
+  "components_instructions": {
+    "chat_list": {
+      "layout": "Vertical list in the sidebar.",
+      "item_style": "flex flex-row items-center gap-4 rounded-2xl p-3 sm:p-4 cursor-pointer relative group transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5",
+      "active_item": "bg-white/40 dark:bg-black/40 shadow-sm border border-white/20",
+      "avatar_container": "w-12 h-12 rounded-full overflow-hidden border-2 border-white/30 flex-shrink-0",
+      "unread_badge": "bg-indigo-500 text-white rounded-full text-xs font-bold px-2 py-0.5 ml-auto"
+    },
+    "chat_window": {
+      "header": "Sticky top-0 z-10 p-4 sm:p-6 border-b border-black/5 dark:border-white/5 bg-white/40 dark:bg-black/40 backdrop-blur-md flex items-center justify-between",
+      "message_list": "flex-1 flex flex-col gap-4 p-4 sm:p-6 overflow-y-auto",
+      "message_bubble_user": "bg-indigo-500 text-white rounded-2xl rounded-tr-sm p-4 max-w-[85%] sm:max-w-[70%] self-end shadow-sm",
+      "message_bubble_receiver": "bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-900 dark:text-slate-50 border border-white/20 dark:border-white/10 rounded-2xl rounded-tl-sm p-4 max-w-[85%] sm:max-w-[70%] self-start shadow-[0_4px_16px_rgba(0,0,0,0.04)]",
+      "input_area": "p-4 border-t border-black/5 dark:border-white/5 bg-white/30 dark:bg-black/30 backdrop-blur-md flex items-center gap-2 sm:gap-4",
+      "input_field": "flex-1 bg-white/50 dark:bg-black/50 border border-white/20 dark:border-white/10 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-slate-900 dark:text-slate-50 placeholder:text-slate-500"
+    },
+    "contacts_new_chat": {
+      "strategy": "Use Shadcn Tabs in the sidebar header to switch between 'Chats' and 'Contacts'. Contacts list uses the same item_style as chat_list but includes an alphabet divider (A, B, C...) which is sticky.",
+      "fab": "Floating Action Button (FAB) at bottom-right of sidebar for 'New Chat' using primary color, shadow-lg, and + icon."
+    },
+    "profile_settings": {
+      "strategy": "Shadcn Dialog for Profile/Settings accessible from sidebar header avatar click. Dialog must have glass_surface styling (override default DialogContent bg).",
+      "content": "Large avatar (w-24 h-24) centered, with an elegant name/status typography block. Settings options in a glassmorphic list below."
+    },
+    "theme_toggle": {
+      "strategy": "Placed in the sidebar header or settings dialog. Use Shadcn Switch or an icon button swapping between Phosphor Sun/Moon icons."
+    },
+    "emoji_picker_ui": {
+      "strategy": "Shadcn Popover anchored to a smiley icon inside the input area. Custom popover content: tight grid of emojis, no background on emojis until hover.",
+      "styles": "PopoverContent must have glass_surface classes."
+    },
+    "file_attachment_ui": {
+      "strategy": "Shadcn DropdownMenu anchored to a Paperclip icon in the input area.",
+      "menu_items": "Document, Image, Video, Audio using Phosphor icons.",
+      "upload_preview": "A small horizontal scrolling area above the input box that renders image thumbnails (w-16 h-16 rounded-lg border border-white/20) with a top-right 'x' button to remove."
+    }
+  },
+  "media": {
+    "icons": {
+      "library": "@phosphor-icons/react",
+      "instructions": "Run: yarn add @phosphor-icons/react. Use Duotone weight for a sophisticated, layered look matching the glassmorphism."
+    },
+    "images": [
+      {
+        "category": "background_light",
+        "url": "https://images.unsplash.com/photo-1761798983107-a48299f8fb45?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGdyYWRpZW50JTIwc29mdCUyMGJsdXJ8ZW58MHx8fHwxNzc2NzA1MzQ2fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract pastel gradient background. Use as fixed 100vh 100vw absolute background for the light mode app."
+      },
+      {
+        "category": "background_dark",
+        "url": "https://images.pexels.com/photos/6985132/pexels-photo-6985132.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Vivid dark neon background. Use as fixed 100vh 100vw absolute background for the dark mode app."
+      },
+      {
+        "category": "avatar",
+        "url": "https://images.unsplash.com/photo-1672462478040-a5920e2c23d8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwxfHxwb3J0cmFpdCUyMHNtaWxpbmclMjBwZXJzb258ZW58MHx8fHwxNzc2NjAzNDgyfDA&ixlib=rb-4.1.0&q=85",
+        "description": "User Avatar 1"
+      },
+      {
+        "category": "avatar",
+        "url": "https://images.unsplash.com/photo-1676337415964-11046dda455e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwyfHxwb3J0cmFpdCUyMHNtaWxpbmclMjBwZXJzb258ZW58MHx8fHwxNzc2NjAzNDgyfDA&ixlib=rb-4.1.0&q=85",
+        "description": "User Avatar 2"
+      },
+      {
+        "category": "avatar",
+        "url": "https://images.unsplash.com/photo-1592234789031-94bf65f630ed?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHw0fHxwb3J0cmFpdCUyMHNtaWxpbmclMjBwZXJzb258ZW58MHx8fHwxNzc2NjAzNDgyfDA&ixlib=rb-4.1.0&q=85",
+        "description": "User Avatar 3"
+      },
+      {
+        "category": "avatar",
+        "url": "https://images.pexels.com/photos/3078343/pexels-photo-3078343.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "User Avatar 4"
+      },
+      {
+        "category": "avatar",
+        "url": "https://images.pexels.com/photos/7047890/pexels-photo-7047890.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "User Avatar 5"
+      }
+    ]
+  },
+  "accessibility_and_testing": {
+    "contrast": "Ensure text inside glass surfaces has enough contrast. In dark mode, ensure text is bright white over dark glass.",
+    "testing_attributes": [
+      "data-testid=\"chat-list-container\"",
+      "data-testid=\"chat-list-item\"",
+      "data-testid=\"chat-window\"",
+      "data-testid=\"message-input\"",
+      "data-testid=\"send-button\"",
+      "data-testid=\"emoji-trigger\"",
+      "data-testid=\"attachment-trigger\"",
+      "data-testid=\"theme-toggle\"",
+      "data-testid=\"profile-settings-trigger\"",
+      "data-testid=\"new-chat-button\"",
+      "data-testid=\"contacts-tab\""
+    ]
+  }
+}

@@ -40,8 +40,8 @@ export const ChatItem = ({
     : 'No messages yet';
 
   const truncatedPreview =
-    lastMessagePreview.length > 40
-      ? `${lastMessagePreview.substring(0, 40)}...`
+    lastMessagePreview.length > 20
+      ? `${lastMessagePreview.substring(0, 20)}...`
       : lastMessagePreview;
 
   const isSelected = chat.id === selectedId;
@@ -121,7 +121,7 @@ export const ChatItem = ({
                   padding: '3px 7px',
                   borderRadius: 999,
                   background: isSelected
-                    ? 'rgba(255,255,255,0.14)'
+                    ? 'var(--accent-strong)'
                     : 'var(--accent-bg)',
                   color: isSelected
                     ? 'rgba(255,255,255,0.86)'
@@ -167,7 +167,7 @@ export const ChatItem = ({
               fontSize: 12,
               lineHeight: 1.4,
               color: isSelected
-                ? 'rgba(243,247,255,0.9)'
+                ? 'var(--text-secondary)'
                 : 'var(--text-secondary)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -183,7 +183,7 @@ export const ChatItem = ({
               style={{
                 fontSize: 11,
                 color: isSelected
-                  ? 'rgba(243,247,255,0.72)'
+                  ? 'var(--text-muted)'
                   : 'var(--text-muted)',
                 fontWeight: 700,
               }}

@@ -2,7 +2,7 @@
  * Message input component with validation
  */
 
-import { useState } from 'react';
+import React, { useState, useRef, lazy, Suspense } from 'react';
 
 const ICONS = {
   attach: '📎',
@@ -23,6 +23,8 @@ export const MessageInput = ({
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const inputRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -76,6 +78,22 @@ export const MessageInput = ({
 
   const removeFile = () => {
     setSelectedFile(null);
+  };
+
+  // Simple built‑in emoji picker (no external dependency)
+  const emojis = ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','😘','🥰','🤗','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😯','😪','😫','🥱','😴','🤤','😎','🤩','🥳','🤪','😜','🤭','🧐','🤓','😈','👿','👹','👺','🤡','💩','👻','👽','🤖','💀','☠️','👾','🤠','🤡'];
+
+  const handleEmojiClick = (emoji) => {
+    const cursorPos = inputRef.current?.selectionStart ?? message.length;
+    const newMsg = message.slice(0, cursorPos) + emoji + message.slice(cursorPos);
+    setMessage(newMsg);
+    // restore cursor after insertion
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.selectionStart = inputRef.current.selectionEnd = cursorPos + emoji.length;
+        inputRef.current.focus();
+      }
+    }, 0);
   };
 
   return (
@@ -255,6 +273,28 @@ export const MessageInput = ({
           boxShadow: 'var(--surface-glow)',
         }}
       >
+        {/* Emoji button */}
+        <button
+          type="button"
+          onClick={() => setShowEmojiPicker(v => !v)}
+          aria-label="Open emoji picker"
+          style={{
+            width: 42,
+            height: 42,
+            borderRadius: '50%',
+            background: 'var(--bg-form)',
+            border: '1px solid var(--border)',
+            color: 'var(--text-primary)',
+            fontSize: 20,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            marginRight: 4,
+          }}
+        >
+          😀
+        </button>
         {isMobile && (
           <button
             type="button"
@@ -278,6 +318,45 @@ export const MessageInput = ({
           </button>
         )}
 
+        {/* Emoji picker dropdown */}
+        {showEmojiPicker && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '70px',
+              left: '10px',
+              zIndex: 1000,
+              background: 'var(--bg-form)',
+              border: '1px solid var(--border)',
+              borderRadius: 12,
+              boxShadow: 'var(--surface-glow)',
+              padding: 8,
+              maxWidth: 250,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(8, 1fr)',
+              gap: 4,
+            }}
+          >
+            {emojis.map((e) => (
+              <button
+                key={e}
+                type="button"
+                onClick={() => {
+                  handleEmojiClick(e);
+                  setShowEmojiPicker(false);
+                }}
+                style={{
+                  fontSize: 20,
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                {e}
+              </button>
+            ))}
+          </div>
+        )}
         <label
           aria-label="Attach file"
           style={{
@@ -305,6 +384,7 @@ export const MessageInput = ({
         </label>
 
         <input
+          ref={inputRef}
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
