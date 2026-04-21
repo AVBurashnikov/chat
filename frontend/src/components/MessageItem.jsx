@@ -2,8 +2,9 @@
  * Component for a single message in the chat
  */
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { MessageDropdown } from './MessageDropdown';
 
 const STATUS_ICONS = {
   sent: '✓',
@@ -12,6 +13,9 @@ const STATUS_ICONS = {
 
 export const MessageItem = ({ message, onReply }) => {
   const { user } = useAuth();
+  const timerRef = useRef(null);
+
+  const [isMessageDropdownOpen, setMessageDropdownOpen] = useState(false);
 
   const mine = user && message.sender_id === user.id;
   const utcDate = new Date(
@@ -47,31 +51,40 @@ export const MessageItem = ({ message, onReply }) => {
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    onReply(message);
+    // onReply(message);
+    setMessageDropdownOpen(true);
   };
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
+    timerRef.current = setTimeout(() => {
+      setMessageDropdownOpen(true);
+      if (navigator.vibrate) navigator.vibrate(50);
+    }, 500);
   };
 
   const handleTouchEnd = (e) => {
     const diff = e.changedTouches[0].clientX - touchStartX.current;
-    if (diff > 50) {
+    console.log(diff);
+
+    if (diff < 50) {
       onReply(message);
+    }
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
     }
   };
 
   return (
     <div
-      onContextMenu={handleContextMenu}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
       style={{
         display: 'flex',
         justifyContent: mine ? 'flex-end' : 'flex-start',
         marginBottom: 24,
         alignItems: 'flex-end',
         gap: 10,
+        position: 'relative',
+        zIndex: isMessageDropdownOpen ? 30 : 1,
       }}
     >
       {!mine && (
@@ -96,6 +109,9 @@ export const MessageItem = ({ message, onReply }) => {
       )}
 
       <div
+        onContextMenu={handleContextMenu}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         style={{
           maxWidth: 'min(70%, 680px)',
           wordBreak: 'break-word',
@@ -104,20 +120,6 @@ export const MessageItem = ({ message, onReply }) => {
           alignItems: mine ? 'flex-end' : 'flex-start',
         }}
       >
-        {/* {!mine && (
-          <div
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: 'var(--text-muted)',
-              marginBottom: 5,
-              paddingLeft: 4,
-            }}
-          >
-            {message.sender_username}
-          </div>
-        )} */}
-
         <div
           style={{
             padding: '12px 14px',
@@ -253,6 +255,15 @@ export const MessageItem = ({ message, onReply }) => {
             </span>
           )}
         </div>
+        {isMessageDropdownOpen && (
+          <MessageDropdown 
+            message={message}
+            onReply={onReply}
+            isMine={mine} 
+            isOpen={isMessageDropdownOpen}
+            setOpen={setMessageDropdownOpen}
+          />
+        )}
       </div>
 
       {mine && (
