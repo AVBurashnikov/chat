@@ -67,7 +67,7 @@ export const MessageItem = ({ message, onReply }) => {
     const diff = e.changedTouches[0].clientX - touchStartX.current;
     console.log(diff);
 
-    if (diff < 50) {
+    if (diff > 50) {
       onReply(message);
     }
     if (timerRef.current) {
@@ -135,6 +135,7 @@ export const MessageItem = ({ message, onReply }) => {
               mine ? 'rgba(255,255,255,0.08)' : 'var(--border)'
             }`,
             overflow: 'hidden',
+            whiteSpace: 'pre-wrap',
           }}
         >
           {message.reply_to_message && (
@@ -225,8 +226,7 @@ export const MessageItem = ({ message, onReply }) => {
               </a>
             </div>
           )}
-
-          {message.content}
+            {message.content}
         </div>
 
         <div

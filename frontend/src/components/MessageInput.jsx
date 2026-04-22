@@ -2,7 +2,7 @@
  * Message input component with validation
  */
 
-import React, { useState, useRef, lazy, Suspense } from 'react';
+import React, { useState, useRef, lazy, Suspense, useEffect } from 'react';
 
 const ICONS = {
   attach: '📎',
@@ -59,6 +59,16 @@ export const MessageInput = ({
     onCancelReply?.();
     setMessage('');
   };
+
+  useEffect(() => {
+    const textarea = inputRef.current;
+    if (textarea) {
+      textarea.style.height = '50px'; 
+      const scrollHeight = textarea.scrollHeight;
+      textarea.style.height = Math.min(scrollHeight, 200) + 'px';
+      textarea.style.overflowY = scrollHeight > 200 ? 'auto' : 'hidden';
+    }
+  }, [message]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -392,15 +402,15 @@ export const MessageInput = ({
           />
         </label>
 
-        <input
+        <textarea
           ref={inputRef}
-          type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder={selectedFile ? 'Add a caption...' : 'Write a message...'}
           style={{
             flex: 1,
             minWidth: 0,
+            height: 50,
             padding: '13px 14px',
             borderRadius: 14,
             border: '1px solid transparent',
@@ -408,10 +418,19 @@ export const MessageInput = ({
             color: 'var(--text-primary)',
             fontSize: 15,
             boxSizing: 'border-box',
+            overflowY: 'hidden',
+            resize: 'none',
           }}
           disabled={disabled}
-          maxLength="5000"
+          maxLength={5000}
           autoComplete="off"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              e.stopPropagation();
+              handleSubmit(e);
+            }
+          }}
         />
 
         <button
