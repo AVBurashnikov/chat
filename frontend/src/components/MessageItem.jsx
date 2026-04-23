@@ -3,6 +3,9 @@
  */
 
 import { useRef, useState } from 'react';
+
+import styles from './MessageItem.module.css';
+
 import { useAuth } from '../hooks/useAuth';
 import { MessageDropdown } from './MessageDropdown';
 
@@ -75,91 +78,41 @@ export const MessageItem = ({ message, onReply }) => {
     }
   };
 
+  const replyClass = `${styles.reply} ${
+    mine ? styles.replyMine : styles.replyOther
+  }`;
+
   return (
     <div
-      style={{
-        display: 'flex',
-        justifyContent: mine ? 'flex-end' : 'flex-start',
-        marginBottom: 24,
-        alignItems: 'flex-end',
-        gap: 10,
-        position: 'relative',
-        zIndex: isMessageDropdownOpen ? 30 : 1,
-      }}
+      className={`
+        ${styles.wrapper}
+        ${mine ? styles.mine : styles.other}
+        ${isMessageDropdownOpen ? styles.wrapperOpen : styles.wrapperClosed}
+      `}
     >
       {!mine && (
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: '50%',
-            background: 'var(--avatar-bg)',
-            color: 'var(--text-primary)',
-            fontSize: 14,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800,
-            flexShrink: 0,
-            boxShadow: 'var(--surface-glow)',
-          }}
-        >
+        <div className={`${styles.avatar} ${styles.avatarOther}`}>
           {initial}
         </div>
       )}
-
       <div
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        style={{
-          maxWidth: 'min(70%, 680px)',
-          wordBreak: 'break-word',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: mine ? 'flex-end' : 'flex-start',
-        }}
+        className={`
+          ${styles.content}
+          ${mine ? styles.alignEnd : styles.alignStart}
+        `}
       >
         <div
-          style={{
-            padding: '12px 14px',
-            borderRadius: 22,
-            borderBottomRightRadius: mine ? 8 : 22,
-            borderBottomLeftRadius: mine ? 22 : 8,
-            background: mine ? 'var(--msg-own)' : 'var(--msg-other)',
-            color: mine ? 'var(--msg-text-own)' : 'var(--msg-text-other)',
-            fontSize: 14,
-            lineHeight: 1.5,
-            boxShadow: 'var(--shadow-card)',
-            border: `1px solid ${
-              mine ? 'rgba(255,255,255,0.08)' : 'var(--border)'
-            }`,
-            overflow: 'hidden',
-            whiteSpace: 'pre-wrap',
-          }}
+          className={`
+            ${styles.bubble}
+            ${mine ? styles.bubbleMine : styles.bubbleOther}
+          `}
         >
           {message.reply_to_message && (
-            <div
-              style={{
-                borderLeft: `3px solid ${
-                  mine ? 'rgba(255,255,255,0.55)' : 'var(--accent-strong)'
-                }`,
-                paddingLeft: 10,
-                marginBottom: 10,
-                fontSize: 12,
-                borderRadius: 2,
-                color: mine
-                  ? 'rgba(255,255,255,0.86)'
-                  : 'var(--text-secondary)',
-                background: mine
-                  ? 'rgba(255,255,255,0.08)'
-                  : 'rgba(125,211,252,0.08)',
-                paddingTop: 8,
-                paddingBottom: 8,
-                paddingRight: 8,
-              }}
-            >
-              <strong style={{ display: 'block', marginBottom: 2 }}>
+            <div className={replyClass}>
+              <strong className={styles.replyAuthor}>
                 {message.reply_to_message.sender_username}
               </strong>
               <div>
@@ -171,18 +124,11 @@ export const MessageItem = ({ message, onReply }) => {
           )}
 
           {message.file_url && message.file_type?.startsWith('image/') && (
-            <div style={{ marginBottom: message.content ? 10 : 0 }}>
+            <div className={styles.imageWrapper}>
               <img
                 src={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`}
                 alt={message.file_name}
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: 260,
-                  display: 'block',
-                  borderRadius: 16,
-                  cursor: 'pointer',
-                  boxShadow: '0 12px 24px rgba(2, 6, 23, 0.22)',
-                }}
+                className={styles.image}
                 onClick={() =>
                   window.open(
                     `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`,
@@ -199,23 +145,13 @@ export const MessageItem = ({ message, onReply }) => {
                 href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '10px 12px',
-                  background: mine
-                    ? 'rgba(255,255,255,0.12)'
-                    : 'rgba(125,211,252,0.08)',
-                  borderRadius: 14,
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  fontSize: 12,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}
+                className={`
+                  ${styles.file}
+                  ${mine ? styles.fileMine : styles.fileOther}
+                `}
               >
                 <span style={{ fontSize: 16 }}>📎</span>
-                <span style={{ display: 'flex', flexDirection: 'column' }}>
+                <span className={styles.fileMeta}>
                   <span style={{ fontWeight: 700 }}>{message.file_name}</span>
                   {message.file_size && (
                     <span style={{ opacity: 0.75 }}>
@@ -229,27 +165,12 @@ export const MessageItem = ({ message, onReply }) => {
             {message.content}
         </div>
 
-        <div
-          style={{
-            marginTop: 6,
-            paddingInline: 6,
-            fontSize: 11,
-            color: 'var(--text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
-        >
+        <div className={styles.footer}>
           <span>{time}</span>
           {mine && statusInfo && (
             <span
-              title={statusInfo.title}
-              style={{
-                fontSize: 11,
-                color: statusInfo.color,
-                fontWeight: 700,
-                letterSpacing: '0.03em',
-              }}
+              className={styles.status}
+              style={{ color: statusInfo.color }}
             >
               {statusInfo.icon}
             </span>
@@ -267,22 +188,7 @@ export const MessageItem = ({ message, onReply }) => {
       </div>
 
       {mine && (
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: '50%',
-            background: 'var(--avatar-own-bg)',
-            color: '#f3f7ff',
-            fontSize: 14,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800,
-            flexShrink: 0,
-            boxShadow: 'var(--surface-glow)',
-          }}
-        >
+        <div className={`${styles.avatar} ${styles.avatarMine}`}>
           {(user?.username || '?')[0]?.toUpperCase()}
         </div>
       )}

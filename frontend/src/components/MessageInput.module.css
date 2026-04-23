@@ -1,0 +1,110 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--bg-form);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  position: relative;
+  z-index: 10;
+}
+
+.mobileMenuButton {
+  display: none;
+  background: var(--bg-form);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  color: var(--text-primary);
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .mobileMenuButton {
+    display: flex;
+  }
+}
+
+.inputRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  box-shadow: var(--surface-glow);
+}
+
+.emojiButton {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--bg-form);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.attachButton {
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-form);
+  flex-shrink: 0;
+}
+
+.textarea {
+  flex: 1;
+  min-width: 0;
+  height: 50px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 15px;
+  box-sizing: border-box;
+  overflow-y: hidden;
+  resize: none;
+}
+
+.sendButton {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--gradient-selected);
+  color: #ffffff;
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: var(--shadow-card);
+  flex-shrink: 0;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--danger-bg);
+  border: 1px solid rgba(248, 113, 113, 0.18);
+}

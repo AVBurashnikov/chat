@@ -1,0 +1,48 @@
+.container {
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent-strong);
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  box-shadow: var(--surface-glow);
+}
+
+.content {
+  min-width: 0;
+}
+
+.title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  word-break: break-word;
+}
+
+.cancelButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--danger);
+  font-size: 15px;
+  flex-shrink: 0;
+  transition: 0.15s ease;
+}
+
+.cancelButton:hover {
+  background: var(--bg-hover);
+}

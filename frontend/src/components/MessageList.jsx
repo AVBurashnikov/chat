@@ -61,6 +61,8 @@ export const MessageList = ({ messages, onReply }) => {
         flex: 1,
         padding: '24px 24px 12px',
         overflowY: 'auto',
+        position: 'relative',
+        zIndex: 1,
         background:
           'radial-gradient(circle at top, rgba(125,211,252,0.06), transparent 30%)',
       }}

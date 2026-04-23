@@ -1,0 +1,54 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-form);
+  color: var(--text-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: 0.15s ease;
+}
+
+.button:hover {
+  background: var(--bg-hover);
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* sizes */
+.sm {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+}
+
+.md {
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+}
+
+.lg {
+  width: 48px;
+  height: 48px;
+  font-size: 18px;
+}
+
+/* variants */
+.default {}
+
+.danger {
+  color: var(--danger);
+}
+
+.accent {
+  background: var(--gradient-selected);
+  border: none;
+  color: white;
+}
