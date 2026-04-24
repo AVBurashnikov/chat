@@ -1,9 +1,10 @@
-/**
+﻿/**
  * Dropdown menu for chat actions
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { archiveChat, deleteChat, toggleChatMute } from '../api/chats';
+import { DropdownMenu, DropdownMenuItem } from './ui/DropdownMenu';
 
 export const ChatDropdown = ({
   chatId,
@@ -60,50 +61,13 @@ export const ChatDropdown = ({
 
   const muteButtonLabel = muted ? 'Unmute chat' : 'Mute chat';
 
-  const buttonStyle = {
-    width: '100%',
-    padding: '12px 14px',
-    border: 'none',
-    background: 'transparent',
-    color: 'var(--text-primary)',
-    textAlign: 'left',
-    fontSize: 13,
-    fontWeight: 600,
-  };
-
   return (
-    <div
-      style={{
-        position: 'absolute',
-        right: 8,
-        top: 'calc(100% - 2px)',
-        minWidth: 180,
-        background: 'var(--bg-surface)',
-        border: '1px solid var(--border)',
-        borderRadius: 16,
-        boxShadow: 'var(--shadow-card)',
-        zIndex: 100,
-        overflow: 'hidden',
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
-      }}
-    >
-      <button type="button" onClick={handleMute} style={buttonStyle}>
-        {muteButtonLabel}
-      </button>
-      <button type="button" onClick={handleArchive} style={buttonStyle}>
-        Archive chat
-      </button>
-      <button
-        type="button"
-        onClick={handleDelete}
-        style={{
-          ...buttonStyle,
-          color: 'var(--danger)',
-        }}
-      >
+    <DropdownMenu>
+      <DropdownMenuItem onClick={handleMute}>{muteButtonLabel}</DropdownMenuItem>
+      <DropdownMenuItem onClick={handleArchive}>Archive chat</DropdownMenuItem>
+      <DropdownMenuItem onClick={handleDelete} danger>
         Delete chat
-      </button>
-    </div>
+      </DropdownMenuItem>
+    </DropdownMenu>
   );
 };

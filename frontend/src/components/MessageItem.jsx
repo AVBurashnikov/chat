@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Component for a single message in the chat
  */
 
@@ -21,9 +21,7 @@ export const MessageItem = ({ message, onReply }) => {
   const [isMessageDropdownOpen, setMessageDropdownOpen] = useState(false);
 
   const mine = user && message.sender_id === user.id;
-  const utcDate = new Date(
-    message.created_at + (message.created_at.includes('Z') ? '' : 'Z')
-  );
+  const utcDate = new Date(message.created_at + (message.created_at.includes('Z') ? '' : 'Z'));
   const time = utcDate.toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
@@ -33,18 +31,18 @@ export const MessageItem = ({ message, onReply }) => {
     ? message.read_at
       ? {
           icon: STATUS_ICONS.delivered,
-          color: '#7dd3fc',
+          className: styles.statusRead,
           title: 'Прочитано',
         }
       : message.delivered_at
         ? {
             icon: STATUS_ICONS.delivered,
-            color: 'rgba(243,247,255,0.72)',
+            className: styles.statusDelivered,
             title: 'Доставлено',
           }
         : {
             icon: STATUS_ICONS.sent,
-            color: 'rgba(243,247,255,0.72)',
+            className: styles.statusSent,
             title: 'Отправлено',
           }
     : null;
@@ -54,7 +52,6 @@ export const MessageItem = ({ message, onReply }) => {
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    // onReply(message);
     setMessageDropdownOpen(true);
   };
 
@@ -68,7 +65,6 @@ export const MessageItem = ({ message, onReply }) => {
 
   const handleTouchEnd = (e) => {
     const diff = e.changedTouches[0].clientX - touchStartX.current;
-    console.log(diff);
 
     if (diff > 50) {
       onReply(message);
@@ -78,9 +74,8 @@ export const MessageItem = ({ message, onReply }) => {
     }
   };
 
-  const replyClass = `${styles.reply} ${
-    mine ? styles.replyMine : styles.replyOther
-  }`;
+  const replyClass = `${styles.reply} ${mine ? styles.replyMine : styles.replyOther}`;
+  const fileWrapperClass = `${styles.fileWrapper} ${!message.content ? styles.fileWrapperNoContent : ''}`;
 
   return (
     <div
@@ -90,11 +85,7 @@ export const MessageItem = ({ message, onReply }) => {
         ${isMessageDropdownOpen ? styles.wrapperOpen : styles.wrapperClosed}
       `}
     >
-      {!mine && (
-        <div className={`${styles.avatar} ${styles.avatarOther}`}>
-          {initial}
-        </div>
-      )}
+      {!mine && <div className={`${styles.avatar} ${styles.avatarOther}`}>{initial}</div>}
       <div
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
@@ -140,7 +131,7 @@ export const MessageItem = ({ message, onReply }) => {
           )}
 
           {message.file_url && !message.file_type?.startsWith('image/') && (
-            <div style={{ marginBottom: message.content ? 10 : 0 }}>
+            <div className={fileWrapperClass}>
               <a
                 href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${message.file_url}`}
                 target="_blank"
@@ -150,37 +141,35 @@ export const MessageItem = ({ message, onReply }) => {
                   ${mine ? styles.fileMine : styles.fileOther}
                 `}
               >
-                <span style={{ fontSize: 16 }}>📎</span>
+                <span className={styles.fileIcon}>📎</span>
                 <span className={styles.fileMeta}>
-                  <span style={{ fontWeight: 700 }}>{message.file_name}</span>
+                  <span className={styles.fileName}>{message.file_name}</span>
                   {message.file_size && (
-                    <span style={{ opacity: 0.75 }}>
-                      {Math.round(message.file_size / 1024)} KB
-                    </span>
+                    <span className={styles.fileSize}>{Math.round(message.file_size / 1024)} KB</span>
                   )}
                 </span>
               </a>
             </div>
           )}
-            {message.content}
+          {message.content}
         </div>
 
         <div className={styles.footer}>
           <span>{time}</span>
           {mine && statusInfo && (
             <span
-              className={styles.status}
-              style={{ color: statusInfo.color }}
+              className={`${styles.status} ${statusInfo.className}`}
+              title={statusInfo.title}
             >
               {statusInfo.icon}
             </span>
           )}
         </div>
         {isMessageDropdownOpen && (
-          <MessageDropdown 
+          <MessageDropdown
             message={message}
             onReply={onReply}
-            isMine={mine} 
+            isMine={mine}
             isOpen={isMessageDropdownOpen}
             setOpen={setMessageDropdownOpen}
           />

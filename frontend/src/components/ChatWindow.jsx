@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Chat window with WebSocket support
  */
 
@@ -8,6 +8,7 @@ import { getMessages, sendFileMessage } from '../api/chats';
 import { useAuth } from '../hooks/useAuth';
 import { MessageInput } from './MessageInput';
 import { MessageList } from './MessageList';
+import styles from './ChatWindow.module.css';
 
 export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   const { user } = useAuth();
@@ -23,9 +24,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   useEffect(() => {
     if (!chatId) return;
 
-    const token =
-      sessionStorage.getItem('access_token') ||
-      localStorage.getItem('token');
+    const token = sessionStorage.getItem('access_token') || localStorage.getItem('token');
 
     if (!token) {
       console.warn('No token available');
@@ -53,10 +52,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
         if (msg.type === 'ping') {
           ws.send(JSON.stringify({ type: 'pong' }));
         } else if (msg.type === 'message') {
-          queryClient.setQueryData(['messages', chatId], (old = []) => [
-            ...old,
-            msg,
-          ]);
+          queryClient.setQueryData(['messages', chatId], (old = []) => [...old, msg]);
 
           if (msg.sender_id !== user?.id) {
             ws.send(JSON.stringify({ type: 'read' }));
@@ -131,46 +127,14 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
 
   if (!chatId) {
     return (
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--text-muted)',
-          background: 'var(--bg-primary)',
-          position: 'relative',
-          gap: 8,
-        }}
-      >
+      <div className={styles.empty}>
         {isMobile && (
-          <button
-            onClick={onMenuOpen}
-            style={{
-              position: 'absolute',
-              bottom: 16,
-              left: 16,
-              background: 'var(--bg-form)',
-              border: '1px solid var(--border)',
-              borderRadius: '50%',
-              width: 48,
-              height: 48,
-              color: 'var(--text-primary)',
-              fontSize: 18,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: 'var(--shadow-card)',
-            }}
-          >
+          <button onClick={onMenuOpen} className={styles.menuButton}>
             ☰
           </button>
         )}
-        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-secondary)' }}>
-          Select a chat
-        </div>
-        <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+        <div className={styles.emptyTitle}>Select a chat</div>
+        <div className={styles.emptyDescription}>
           Choose a conversation from the sidebar to start messaging.
         </div>
       </div>
@@ -178,24 +142,8 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   }
 
   return (
-    <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'var(--bg-primary)',
-        position: 'relative',
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background:
-            'radial-gradient(circle at top right, rgba(14,165,233,0.07), transparent 28%)',
-          pointerEvents: 'none',
-        }}
-      />
+    <div className={styles.window}>
+      <div className={styles.backdrop} />
       <MessageList messages={messages} onReply={setReplyTo} />
       <MessageInput
         onSend={handleSend}

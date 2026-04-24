@@ -1,4 +1,4 @@
-.wrapper {
+﻿.wrapper {
   display: flex;
   margin-bottom: 24px;
   align-items: flex-end;
@@ -22,7 +22,6 @@
   z-index: 1;
 }
 
-/* avatar */
 .avatar {
   width: 36px;
   height: 36px;
@@ -46,7 +45,6 @@
   color: #f3f7ff;
 }
 
-/* message container */
 .content {
   max-width: min(70%, 680px);
   word-break: break-word;
@@ -62,7 +60,6 @@
   align-items: flex-start;
 }
 
-/* bubble */
 .bubble {
   padding: 12px 14px;
   border-radius: 22px;
@@ -76,7 +73,7 @@
 .bubbleMine {
   background: var(--msg-own);
   color: var(--msg-text-own);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom-right-radius: 8px;
 }
 
@@ -87,7 +84,6 @@
   border-bottom-left-radius: 8px;
 }
 
-/* reply preview inside message */
 .reply {
   padding: 8px;
   margin-bottom: 10px;
@@ -97,14 +93,14 @@
 }
 
 .replyMine {
-  border-left: 3px solid rgba(255,255,255,0.55);
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.86);
+  border-left: 3px solid rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .replyOther {
   border-left: 3px solid var(--accent-strong);
-  background: rgba(125,211,252,0.08);
+  background: rgba(125, 211, 252, 0.08);
   color: var(--text-secondary);
 }
 
@@ -114,7 +110,6 @@
   font-weight: 700;
 }
 
-/* image */
 .imageWrapper {
   margin-bottom: 10px;
 }
@@ -128,7 +123,14 @@
   box-shadow: 0 12px 24px rgba(2, 6, 23, 0.22);
 }
 
-/* file */
+.fileWrapper {
+  margin-bottom: 10px;
+}
+
+.fileWrapperNoContent {
+  margin-bottom: 0;
+}
+
 .file {
   display: inline-flex;
   align-items: center;
@@ -140,12 +142,16 @@
 }
 
 .fileMine {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .fileOther {
-  background: rgba(125,211,252,0.08);
+  background: rgba(125, 211, 252, 0.08);
+}
+
+.fileIcon {
+  font-size: 16px;
 }
 
 .fileMeta {
@@ -153,7 +159,14 @@
   flex-direction: column;
 }
 
-/* footer */
+.fileName {
+  font-weight: 700;
+}
+
+.fileSize {
+  opacity: 0.75;
+}
+
 .footer {
   margin-top: 6px;
   padding-inline: 6px;
@@ -168,4 +181,13 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.03em;
+}
+
+.statusSent,
+.statusDelivered {
+  color: rgba(243, 247, 255, 0.72);
+}
+
+.statusRead {
+  color: #7dd3fc;
 }

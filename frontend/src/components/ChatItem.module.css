@@ -1,0 +1,154 @@
+﻿.container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  border-radius: 18px;
+  background: transparent;
+  border: 1px solid var(--border);
+  box-shadow: var(--surface-glow);
+  overflow: visible;
+  z-index: 1;
+}
+
+.selected {
+  background: var(--gradient-selected);
+  border-color: rgba(125, 211, 252, 0.18);
+  box-shadow: var(--shadow-card);
+}
+
+.open {
+  z-index: 30;
+}
+
+.selectButton {
+  flex: 1;
+  text-align: left;
+  padding: 14px;
+  border-radius: 18px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selectButtonSelected {
+  color: var(--text-primary);
+}
+
+.rowTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.titleBlock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.onlineDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--offline-dot);
+}
+
+.onlineDotActive {
+  background: var(--online-dot);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.45);
+}
+
+.title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.titleSelected {
+  color: var(--text-primary);
+}
+
+.muted {
+  margin-left: 6px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mutedSelected {
+  background: var(--accent-strong);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.unread {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--unread-bg);
+  color: var(--unread-text);
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.rowBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.preview {
+  flex: 1;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.previewSelected {
+  font-weight: 600;
+}
+
+.time {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.menuButton {
+  margin-right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-form);
+  color: var(--text-secondary);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--surface-glow);
+  position: relative;
+  z-index: 2;
+}
+
+.menuButtonSelected {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.92);
+}

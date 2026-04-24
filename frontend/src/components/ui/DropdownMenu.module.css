@@ -1,0 +1,36 @@
+﻿.menu {
+  position: absolute;
+  top: calc(100% - 2px);
+  min-width: 180px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  z-index: 100;
+  overflow: hidden;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.right {
+  right: 8px;
+}
+
+.left {
+  left: 8px;
+}
+
+.item {
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.itemDanger {
+  color: var(--danger);
+}

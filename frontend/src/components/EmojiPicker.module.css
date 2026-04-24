@@ -1,0 +1,21 @@
+﻿.picker {
+  position: absolute;
+  bottom: 70px;
+  left: 10px;
+  z-index: 1000;
+  background: var(--bg-form);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--surface-glow);
+  padding: 8px;
+  max-width: 400px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+
+.emojiButton {
+  font-size: 20px;
+  background: transparent;
+  border: none;
+}

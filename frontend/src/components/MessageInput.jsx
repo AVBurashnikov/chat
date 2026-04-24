@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Message input component with validation
  */
 import React, { useState, useRef, lazy, Suspense, useEffect } from 'react';
@@ -14,10 +14,10 @@ import ReplyPreview from './ReplyPreview';
 import IconButton from './ui/IconButton';
 
 const ICONS = {
-  attach: '📎',
-  close: '✕',
-  menu: '☰',
-  send: '➜',
+  emoji: '\u{1F600}',
+  attach: '\u{1F4CE}',
+  menu: '\u{2630}',
+  send: '\u{27A4}',
 };
 
 export const MessageInput = ({
@@ -78,7 +78,7 @@ export const MessageInput = ({
       <div className={styles.inputRow}>
 
         <IconButton onClick={() => setShowEmojiPicker(v => !v)} aria-label="Open emoji picker">
-          😀
+          {ICONS.emoji}
         </IconButton>
 
         <IconButton onClick={onMenuOpen} aria-label="Open chats" size="md" >
@@ -96,7 +96,7 @@ export const MessageInput = ({
           <input
             type="file"
             onChange={handleFileSelect}
-            style={{ display: 'none' }}
+            className={styles.hiddenFileInput}
             accept="image/*,.pdf,.doc,.docx,.txt"
           />
         </label>
@@ -132,3 +132,4 @@ export const MessageInput = ({
     </form>
   );
 };
+

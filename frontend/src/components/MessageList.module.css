@@ -1,0 +1,27 @@
+﻿.container {
+  flex: 1;
+  padding: 24px 24px 12px;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+  background: radial-gradient(circle at top, rgba(125, 211, 252, 0.06), transparent 30%);
+}
+
+.dateGroup {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 18px;
+}
+
+.dateLabel {
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  box-shadow: var(--surface-glow);
+}

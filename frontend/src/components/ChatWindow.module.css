@@ -1,0 +1,54 @@
+﻿.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  position: relative;
+  gap: 8px;
+}
+
+.menuButton {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: var(--bg-form);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  color: var(--text-primary);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-card);
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.emptyDescription {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.07), transparent 28%);
+  pointer-events: none;
+}

@@ -1,10 +1,11 @@
-/**
+﻿/**
  * Component for creating a new chat
  */
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createChat } from '../api/chats';
+import styles from './ChatForm.module.css';
 
 export const ChatForm = ({ onChatCreated }) => {
   const queryClient = useQueryClient();
@@ -29,7 +30,6 @@ export const ChatForm = ({ onChatCreated }) => {
     e.preventDefault();
     setFormError('');
 
-    // Validate input
     if (!participantUsername.trim()) {
       setFormError('Enter a username');
       return;
@@ -45,65 +45,29 @@ export const ChatForm = ({ onChatCreated }) => {
     });
   };
 
+  const isPending = createChatMutation.isPending;
+
   return (
-    <form
-      onSubmit={handleCreateChat}
-      style={{
-        padding: 8,
-        borderBottom: '1px solid var(--border)',
-        boxSizing: 'border-box',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-        }}
-      >
+    <form onSubmit={handleCreateChat} className={styles.form}>
+      <div className={styles.row}>
         <input
           type="text"
           value={participantUsername}
           onChange={(e) => setParticipantUsername(e.target.value)}
           placeholder="username"
-          style={{
-            flex: 1,
-            boxSizing: 'border-box',
-            padding: '6px 9px',
-            borderRadius: 8,
-            border: '1px solid var(--border)',
-            background: 'var(--bg-input)',
-            color: 'var(--text-primary)',
-            fontSize: 12,
-          }}
-          disabled={createChatMutation.isPending}
+          className={styles.input}
+          disabled={isPending}
           autoComplete="off"
         />
         <button
           type="submit"
-          disabled={createChatMutation.isPending || !participantUsername.trim()}
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 8,
-            border: '1px solid var(--border)',
-            background: 'var(--accent-bg)',
-            color: 'var(--accent)',
-            fontWeight: 700,
-            fontSize: 16,
-            lineHeight: '16px',
-            cursor: createChatMutation.isPending ? 'wait' : 'pointer',
-            opacity: createChatMutation.isPending ? 0.7 : 1,
-          }}
+          disabled={isPending || !participantUsername.trim()}
+          className={`${styles.submit} ${isPending ? styles.pending : ''}`}
         >
-          {createChatMutation.isPending ? '…' : '+'}
+          {isPending ? '...' : '+'}
         </button>
       </div>
-      {formError && (
-        <div style={{ marginTop: 4, fontSize: 11, color: 'var(--danger)' }}>
-          {formError}
-        </div>
-      )}
+      {formError && <div className={styles.error}>{formError}</div>}
     </form>
   );
 };
