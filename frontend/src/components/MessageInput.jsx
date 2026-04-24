@@ -1,7 +1,7 @@
 ﻿/**
  * Message input component with validation
  */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useMessageInput } from '../hooks/useMessageInput';
 import { useAutosizeTextarea } from '../hooks/useAutosizeTextarea';
@@ -48,9 +48,61 @@ export const MessageInput = ({
   });
 
   const [showAttachDropdown, setShowAttachDropdown] = useState(false);
-  const inputRef = useRef(null);
+  const [isUltraCompact, setIsUltraCompact] = useState(
+    () => window.innerWidth < 500
+  );
+  const inputRef = useAutosizeTextarea(message, isMobile ? 120 : 200);
+  const longPressTimerRef = useRef(null);
+  const suppressSubmitRef = useRef(false);
 
-  useAutosizeTextarea(inputRef, message, isMobile ? 120 : 200);
+  useEffect(() => {
+    const onResize = () => {
+      setIsUltraCompact(window.innerWidth < 500);
+    };
+
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const clearLongPress = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const handleSendPointerDown = () => {
+    if (!isUltraCompact || disabled) {
+      return;
+    }
+
+    clearLongPress();
+    longPressTimerRef.current = setTimeout(() => {
+      suppressSubmitRef.current = true;
+      setShowAttachDropdown(true);
+      setShowEmojiPicker(false);
+    }, 450);
+  };
+
+  const handleSendPointerUp = () => {
+    clearLongPress();
+  };
+
+  const handleFormSubmit = (e) => {
+    if (suppressSubmitRef.current) {
+      suppressSubmitRef.current = false;
+      e.preventDefault();
+      return;
+    }
+
+    if (isUltraCompact && !message.trim() && selectedFiles.length === 0) {
+      e.preventDefault();
+      return;
+    }
+
+    handleSubmit(e);
+  };
 
   const handleEmojiClick = (emoji) => {
     const cursorPos = inputRef.current?.selectionStart ?? message.length;
@@ -66,7 +118,7 @@ export const MessageInput = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form onSubmit={handleFormSubmit} className={styles.form}>
       {selectedFiles.length > 0 && (
         <div className={styles.previewList}>
           {selectedFiles.map((file, index) => (
@@ -84,21 +136,25 @@ export const MessageInput = ({
       {error && <div className={styles.error}>{error}</div>}
 
       <div className={styles.inputRow}>
-        <IconButton
-          onClick={() => {
-            setShowEmojiPicker((prev) => !prev);
-            setShowAttachDropdown(false);
-          }}
-          aria-label="Open emoji picker"
-        >
-          {ICONS.emoji}
-        </IconButton>
+        {!isUltraCompact && (
+          <IconButton
+            onClick={() => {
+              setShowEmojiPicker((prev) => !prev);
+              setShowAttachDropdown(false);
+            }}
+            aria-label="Open emoji picker"
+            className={styles.emojiButton}
+          >
+            {ICONS.emoji}
+          </IconButton>
+        )}
 
         <IconButton
           onClick={onMenuOpen}
           aria-label="Open chats"
           size="md"
           variant="mobileOnly"
+          className={styles.menuButton}
         >
           {ICONS.menu}
         </IconButton>
@@ -111,24 +167,28 @@ export const MessageInput = ({
           }}
         />
 
-        <div className={styles.attachWrapper}>
-          <IconButton
-            onClick={() => {
-              setShowAttachDropdown((prev) => !prev);
-              setShowEmojiPicker(false);
-            }}
-            aria-label="Attach files"
-          >
-            {ICONS.attach}
-          </IconButton>
+        {!isUltraCompact && (
+          <div className={styles.attachWrapper}>
+            <IconButton
+              onClick={() => {
+                setShowAttachDropdown((prev) => !prev);
+                setShowEmojiPicker(false);
+              }}
+              aria-label="Attach files"
+              className={styles.attachButton}
+            >
+              {ICONS.attach}
+            </IconButton>
 
-          <AttachDropdown
-            open={showAttachDropdown}
-            setOpen={setShowAttachDropdown}
-            onDocumentPick={addSelectedFiles}
-            onImagePick={addSelectedFiles}
-          />
-        </div>
+            <AttachDropdown
+              open={showAttachDropdown}
+              setOpen={setShowAttachDropdown}
+              onDocumentPick={addSelectedFiles}
+              onImagePick={addSelectedFiles}
+              align="start"
+            />
+          </div>
+        )}
 
         <textarea
           className={styles.textarea}
@@ -148,15 +208,39 @@ export const MessageInput = ({
           }}
         />
 
-        <IconButton
-          type="submit"
-          variant="accent"
-          size="lg"
-          disabled={disabled || (!message.trim() && selectedFiles.length === 0)}
-          aria-label="Send message"
-        >
-          {ICONS.send}
-        </IconButton>
+        <div className={styles.sendWrapper}>
+          <IconButton
+            type="submit"
+            variant="accent"
+            size="lg"
+            className={styles.sendButton}
+            disabled={disabled}
+            aria-label={
+              isUltraCompact
+                ? 'Send message. Long press to attach files'
+                : 'Send message'
+            }
+            title={
+              isUltraCompact ? 'Long press to attach files' : 'Send message'
+            }
+            onPointerDown={handleSendPointerDown}
+            onPointerUp={handleSendPointerUp}
+            onPointerLeave={handleSendPointerUp}
+            onPointerCancel={handleSendPointerUp}
+          >
+            {ICONS.send}
+          </IconButton>
+
+          {isUltraCompact && (
+            <AttachDropdown
+              open={showAttachDropdown}
+              setOpen={setShowAttachDropdown}
+              onDocumentPick={addSelectedFiles}
+              onImagePick={addSelectedFiles}
+              align="end"
+            />
+          )}
+        </div>
       </div>
     </form>
   );

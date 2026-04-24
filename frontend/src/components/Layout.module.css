@@ -1,4 +1,4 @@
-﻿.root {
+.root {
   height: 100dvh;
   display: flex;
   justify-content: center;
@@ -147,29 +147,26 @@
 
 @media (max-width: 1024px) {
   .root {
-    padding: 12px;
+    padding: 10px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .root {
-    padding: 0;
+    padding:
+      max(8px, env(safe-area-inset-top))
+      max(8px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
   }
 
   .shell {
-    border-radius: 0;
-    box-shadow: none;
-    border: none;
-    height: 100dvh;
+    border-radius: 16px;
   }
 
   .header {
-    min-height: 66px;
-    padding: 12px 14px;
-  }
-
-  .logo {
-    font-size: 14px;
+    min-height: 68px;
+    padding: 10px 12px;
   }
 
   .tagline,
@@ -184,21 +181,85 @@
   }
 
   .themeButton {
-    width: 38px;
-    height: 38px;
-    font-size: 16px;
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
   }
 
   .userAvatar {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
   }
 
   .logoutButton {
-    padding: 7px 10px;
+    padding: 6px 9px;
   }
 
   .mobileOnly {
     display: inline;
+  }
+}
+
+@media (max-width: 480px) {
+  .root {
+    padding: 0;
+  }
+
+  .shell {
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    height: 100dvh;
+  }
+
+  .header {
+    min-height: 62px;
+    padding:
+      max(8px, env(safe-area-inset-top))
+      max(8px, env(safe-area-inset-right))
+      8px
+      max(8px, env(safe-area-inset-left));
+  }
+}
+
+@media (max-width: 360px) {
+  .logo {
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+
+  .header {
+    min-height: 58px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 320px) {
+  .logo {
+    font-size: 12px;
+    letter-spacing: 0.03em;
+  }
+
+  .headerActions,
+  .userBox {
+    gap: 6px;
+  }
+
+  .themeButton {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .userAvatar {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .logoutButton {
+    padding: 4px 7px;
+    font-size: 11px;
   }
 }

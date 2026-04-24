@@ -1,4 +1,4 @@
-﻿.button {
+.button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,6 +47,78 @@
 @media (max-width: 768px) {
   .mobileOnly {
     display: flex;
+  }
+
+  .md {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
+  .lg {
+    width: 42px;
+    height: 42px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sm {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .md {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  .lg {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .sm {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .md {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .lg {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 320px) {
+  .sm {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+
+  .md {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .lg {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
   }
 }
 

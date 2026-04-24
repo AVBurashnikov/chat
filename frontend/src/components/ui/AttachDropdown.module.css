@@ -1,7 +1,6 @@
-﻿.dropdown {
+.dropdown {
   position: absolute;
   bottom: calc(100% + 10px);
-  left: 0;
   min-width: 180px;
   background: var(--surface-elevated);
   border: 1px solid var(--border);
@@ -11,6 +10,14 @@
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   z-index: 1200;
+}
+
+.alignStart {
+  left: 0;
+}
+
+.alignEnd {
+  right: 0;
 }
 
 .item {
@@ -39,4 +46,21 @@
 
 .hiddenInput {
   display: none;
+}
+
+@media (max-width: 480px) {
+  .dropdown {
+    min-width: 156px;
+  }
+
+  .item {
+    padding: 10px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dropdown {
+    min-width: 140px;
+  }
 }

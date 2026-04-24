@@ -12,6 +12,7 @@ export const AttachDropdown = ({
   setOpen,
   onDocumentPick,
   onImagePick,
+  align = 'start',
 }) => {
   const wrapperRef = useRef(null);
   const documentInputRef = useRef(null);
@@ -49,7 +50,12 @@ export const AttachDropdown = ({
   };
 
   return (
-    <div className={styles.dropdown} ref={wrapperRef}>
+    <div
+      className={`${styles.dropdown} ${
+        align === 'end' ? styles.alignEnd : styles.alignStart
+      }`}
+      ref={wrapperRef}
+    >
       <button
         type="button"
         className={styles.item}
