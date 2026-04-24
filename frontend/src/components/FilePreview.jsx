@@ -1,15 +1,14 @@
-import React, { memo } from 'react';
+﻿import React, { memo } from 'react';
 import styles from './FilePreview.module.css';
 
 const ICONS = {
-  attach: '📎',
-  close: '✕',
+  close: '\u{2715}',
 };
 
 const getIcon = (file) => {
-  if (file.type.startsWith('image/')) return '🖼️';
-  if (file.type.includes('pdf')) return '📄';
-  return '📎';
+  if (file.type.startsWith('image/')) return '\u{1F5BC}\u{FE0F}';
+  if (file.type.includes('pdf')) return '\u{1F4C4}';
+  return '\u{1F4CE}';
 };
 
 const FilePreview = ({ file, onRemove }) => {
@@ -18,18 +17,12 @@ const FilePreview = ({ file, onRemove }) => {
   return (
     <div className={styles.container}>
       <div className={styles.left}>
-        <div className={styles.icon}>
-          {getIcon(file)}
-        </div>
+        <div className={styles.icon}>{getIcon(file)}</div>
 
         <div className={styles.meta}>
-          <div className={styles.fileName}>
-            {file.name}
-          </div>
+          <div className={styles.fileName}>{file.name}</div>
 
-          <div className={styles.fileSize}>
-            {(file.size / 1024 / 1024).toFixed(1)} MB
-          </div>
+          <div className={styles.fileSize}>{(file.size / 1024 / 1024).toFixed(1)} MB</div>
         </div>
       </div>
 

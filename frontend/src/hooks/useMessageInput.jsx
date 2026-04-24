@@ -1,4 +1,6 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
+
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 export const useMessageInput = ({
   onSend,
@@ -8,24 +10,33 @@ export const useMessageInput = ({
 }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e?.preventDefault();
     setError('');
 
     const trimmed = message.trim();
 
-    if (selectedFile) {
+    if (selectedFiles.length > 0) {
       if (trimmed.length > 5000) {
         setError('Message is too long');
         return;
       }
 
-      onSendFile(selectedFile, trimmed, replyTo?.id ?? null);
+      try {
+        for (let index = 0; index < selectedFiles.length; index += 1) {
+          const file = selectedFiles[index];
+          await onSendFile(file, index === 0 ? trimmed : '', replyTo?.id ?? null);
+        }
+      } catch {
+        setError('Failed to send files. Please try again.');
+        return;
+      }
+
       setMessage('');
-      setSelectedFile(null);
+      setSelectedFiles([]);
       onCancelReply?.();
       return;
     }
@@ -45,32 +56,50 @@ export const useMessageInput = ({
     setMessage('');
   };
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const addSelectedFiles = (fileList) => {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
 
-    if (file.size > 10 * 1024 * 1024) {
+    const tooLarge = files.some((file) => file.size > MAX_FILE_SIZE_BYTES);
+    const validFiles = files.filter((file) => file.size <= MAX_FILE_SIZE_BYTES);
+
+    if (!validFiles.length && tooLarge) {
       setError('File too large. Maximum size is 10MB.');
       return;
     }
 
-    setSelectedFile(file);
-    setError('');
+    setSelectedFiles((prev) => {
+      const next = [...prev];
+      validFiles.forEach((file) => {
+        const exists = next.some(
+          (item) =>
+            item.name === file.name &&
+            item.size === file.size &&
+            item.lastModified === file.lastModified
+        );
+        if (!exists) {
+          next.push(file);
+        }
+      });
+      return next;
+    });
+
+    setError(tooLarge ? 'Some files were skipped (max 10MB each).' : '');
   };
 
-  const removeFile = () => {
-    setSelectedFile(null);
+  const removeFile = (indexToRemove) => {
+    setSelectedFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
   return {
     message,
     setMessage,
     error,
-    selectedFile,
+    selectedFiles,
     showEmojiPicker,
     setShowEmojiPicker,
     handleSubmit,
-    handleFileSelect,
+    addSelectedFiles,
     removeFile,
   };
 };

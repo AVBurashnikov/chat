@@ -40,6 +40,16 @@
 
 .default {}
 
+.mobileOnly {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobileOnly {
+    display: flex;
+  }
+}
+
 .danger {
   color: var(--danger);
 }

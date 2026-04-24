@@ -122,6 +122,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
     } catch (error) {
       console.error('Failed to send file:', error);
       alert('Failed to send file. Please try again.');
+      throw error;
     }
   };
 

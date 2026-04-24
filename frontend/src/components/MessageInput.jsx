@@ -1,7 +1,7 @@
 ﻿/**
  * Message input component with validation
  */
-import React, { useState, useRef, lazy, Suspense, useEffect } from 'react';
+import { useRef, useState } from 'react';
 
 import { useMessageInput } from '../hooks/useMessageInput';
 import { useAutosizeTextarea } from '../hooks/useAutosizeTextarea';
@@ -12,6 +12,7 @@ import EmojiPicker from './EmojiPicker';
 import FilePreview from './FilePreview';
 import ReplyPreview from './ReplyPreview';
 import IconButton from './ui/IconButton';
+import { AttachDropdown } from './ui/AttachDropdown';
 
 const ICONS = {
   emoji: '\u{1F600}',
@@ -29,16 +30,15 @@ export const MessageInput = ({
   replyTo,
   onCancelReply,
 }) => {
-
   const {
     message,
     setMessage,
     error,
-    selectedFile,
+    selectedFiles,
     showEmojiPicker,
     setShowEmojiPicker,
     handleSubmit,
-    handleFileSelect,
+    addSelectedFiles,
     removeFile,
   } = useMessageInput({
     onSend,
@@ -47,6 +47,7 @@ export const MessageInput = ({
     onCancelReply,
   });
 
+  const [showAttachDropdown, setShowAttachDropdown] = useState(false);
   const inputRef = useRef(null);
 
   useAutosizeTextarea(inputRef, message, isMobile ? 120 : 200);
@@ -55,7 +56,7 @@ export const MessageInput = ({
     const cursorPos = inputRef.current?.selectionStart ?? message.length;
     const newMsg = message.slice(0, cursorPos) + emoji + message.slice(cursorPos);
     setMessage(newMsg);
-    // restore cursor after insertion
+
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.selectionStart = inputRef.current.selectionEnd = cursorPos + emoji.length;
@@ -66,47 +67,75 @@ export const MessageInput = ({
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <FilePreview file={selectedFile} onRemove={removeFile}/>
-      <ReplyPreview replyTo={replyTo} onCancel={onCancelReply}/>
-
-      {error && (
-        <div className={styles.error}>
-          {error}
+      {selectedFiles.length > 0 && (
+        <div className={styles.previewList}>
+          {selectedFiles.map((file, index) => (
+            <FilePreview
+              key={`${file.name}-${file.size}-${file.lastModified}`}
+              file={file}
+              onRemove={() => removeFile(index)}
+            />
+          ))}
         </div>
       )}
 
-      <div className={styles.inputRow}>
+      <ReplyPreview replyTo={replyTo} onCancel={onCancelReply} />
 
-        <IconButton onClick={() => setShowEmojiPicker(v => !v)} aria-label="Open emoji picker">
+      {error && <div className={styles.error}>{error}</div>}
+
+      <div className={styles.inputRow}>
+        <IconButton
+          onClick={() => {
+            setShowEmojiPicker((prev) => !prev);
+            setShowAttachDropdown(false);
+          }}
+          aria-label="Open emoji picker"
+        >
           {ICONS.emoji}
         </IconButton>
 
-        <IconButton onClick={onMenuOpen} aria-label="Open chats" size="md" >
+        <IconButton
+          onClick={onMenuOpen}
+          aria-label="Open chats"
+          size="md"
+          variant="mobileOnly"
+        >
           {ICONS.menu}
         </IconButton>
-        
-        <EmojiPicker open={showEmojiPicker} onSelect={(emoji) => {
+
+        <EmojiPicker
+          open={showEmojiPicker}
+          onSelect={(emoji) => {
             handleEmojiClick(emoji);
             setShowEmojiPicker(false);
           }}
         />
 
-        <label className={styles.attachButton}>
-          {ICONS.attach}
-          <input
-            type="file"
-            onChange={handleFileSelect}
-            className={styles.hiddenFileInput}
-            accept="image/*,.pdf,.doc,.docx,.txt"
+        <div className={styles.attachWrapper}>
+          <IconButton
+            onClick={() => {
+              setShowAttachDropdown((prev) => !prev);
+              setShowEmojiPicker(false);
+            }}
+            aria-label="Attach files"
+          >
+            {ICONS.attach}
+          </IconButton>
+
+          <AttachDropdown
+            open={showAttachDropdown}
+            setOpen={setShowAttachDropdown}
+            onDocumentPick={addSelectedFiles}
+            onImagePick={addSelectedFiles}
           />
-        </label>
+        </div>
 
         <textarea
           className={styles.textarea}
           ref={inputRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder={selectedFile ? 'Add a caption...' : 'Write a message...'}
+          placeholder={selectedFiles.length ? 'Add a caption...' : 'Write a message...'}
           disabled={disabled}
           maxLength={5000}
           autoComplete="off"
@@ -119,11 +148,11 @@ export const MessageInput = ({
           }}
         />
 
-        <IconButton 
-          type="submit" 
-          variant="accent" 
-          size="lg" 
-          disabled={disabled || (!message.trim() && !selectedFile)} 
+        <IconButton
+          type="submit"
+          variant="accent"
+          size="lg"
+          disabled={disabled || (!message.trim() && selectedFiles.length === 0)}
           aria-label="Send message"
         >
           {ICONS.send}
@@ -132,4 +161,3 @@ export const MessageInput = ({
     </form>
   );
 };
-

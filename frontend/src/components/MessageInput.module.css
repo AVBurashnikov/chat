@@ -11,24 +11,13 @@
   z-index: 10;
 }
 
-.mobileMenuButton {
-  display: none;
-  background: var(--bg-form);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  color: var(--text-primary);
-  font-size: 17px;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-@media (max-width: 768px) {
-  .mobileMenuButton {
-    display: flex;
-  }
+.previewList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 172px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .inputRow {
@@ -40,21 +29,11 @@
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--bg-secondary) 72%, transparent);
   box-shadow: var(--surface-glow);
+  position: relative;
 }
 
-.attachButton {
-  cursor: pointer;
-  font-size: 18px;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg-form);
-  flex-shrink: 0;
+.attachWrapper {
+  position: relative;
 }
 
 .textarea {
@@ -79,8 +58,4 @@
   border-radius: 12px;
   background: var(--danger-bg);
   border: 1px solid rgba(248, 113, 113, 0.18);
-}
-
-.hiddenFileInput {
-  display: none;
 }

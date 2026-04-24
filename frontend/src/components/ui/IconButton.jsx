@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+﻿import React, { memo } from 'react';
 import styles from './IconButton.module.css';
 
 const IconButton = ({
@@ -8,18 +8,24 @@ const IconButton = ({
   variant = 'default',
   size = 'md',
   disabled,
+  className = '',
   ...props
 }) => {
+  const buttonClassName = [
+    styles.button,
+    styles[variant],
+    styles[size],
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`
-        ${styles.button}
-        ${styles[variant]}
-        ${styles[size]}
-      `}
+      className={buttonClassName}
       {...props}
     >
       {children}
