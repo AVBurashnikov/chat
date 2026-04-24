@@ -3,19 +3,25 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   border-radius: 18px;
   background: transparent;
-  border: 1px solid var(--border);
-  box-shadow: var(--surface-glow);
+  border: 1px solid transparent;
+  box-shadow: none;
   overflow: visible;
   z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.container:hover {
+  background: var(--bg-hover);
+  transform: translateY(-1px);
 }
 
 .selected {
-  background: var(--gradient-selected);
-  border-color: rgba(125, 211, 252, 0.18);
-  box-shadow: var(--shadow-card);
+  background: color-mix(in srgb, var(--bg-surface) 75%, transparent);
+  border-color: var(--border);
+  box-shadow: var(--surface-glow);
 }
 
 .open {
@@ -25,7 +31,7 @@
 .selectButton {
   flex: 1;
   text-align: left;
-  padding: 14px;
+  padding: 12px 14px;
   border-radius: 18px;
   border: none;
   cursor: pointer;
@@ -50,7 +56,7 @@
 .titleBlock {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
 }
 
@@ -68,8 +74,9 @@
 }
 
 .title {
-  font-weight: 700;
-  font-size: 14px;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 15px;
   color: var(--text-secondary);
 }
 
@@ -88,8 +95,8 @@
 }
 
 .mutedSelected {
-  background: var(--accent-strong);
-  color: rgba(255, 255, 255, 0.86);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text-primary);
 }
 
 .unread {
@@ -114,7 +121,7 @@
   flex: 1;
   font-size: 12px;
   line-height: 1.4;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -122,6 +129,7 @@
 }
 
 .previewSelected {
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
@@ -132,14 +140,14 @@
 }
 
 .menuButton {
-  margin-right: 12px;
-  width: 34px;
-  height: 34px;
+  margin-right: 10px;
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--bg-form);
   color: var(--text-secondary);
-  font-size: 18px;
+  font-size: 17px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,6 +157,6 @@
 }
 
 .menuButtonSelected {
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.92);
+  background: color-mix(in srgb, var(--bg-form) 70%, transparent);
+  color: var(--text-primary);
 }

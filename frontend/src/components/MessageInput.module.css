@@ -2,11 +2,11 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 14px 18px 18px;
+  padding: 14px 16px 16px;
   border-top: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--bg-form);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: color-mix(in srgb, var(--bg-form) 88%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   position: relative;
   z-index: 10;
 }
@@ -20,7 +20,6 @@
   height: 42px;
   color: var(--text-primary);
   font-size: 17px;
-  display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -37,24 +36,10 @@
   gap: 10px;
   align-items: center;
   padding: 8px;
-  border-radius: 20px;
+  border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 72%, transparent);
   box-shadow: var(--surface-glow);
-}
-
-.emojiButton {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: var(--bg-form);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
 }
 
 .attachButton {
@@ -76,28 +61,15 @@
   flex: 1;
   min-width: 0;
   height: 50px;
-  padding: 13px 14px;
-  border-radius: 14px;
-  border: 1px solid transparent;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
   background: var(--bg-input);
   color: var(--text-primary);
   font-size: 15px;
   box-sizing: border-box;
   overflow-y: hidden;
   resize: none;
-}
-
-.sendButton {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--gradient-selected);
-  color: #ffffff;
-  border: none;
-  font-size: 18px;
-  font-weight: 700;
-  box-shadow: var(--shadow-card);
-  flex-shrink: 0;
 }
 
 .error {
@@ -108,7 +80,7 @@
   background: var(--danger-bg);
   border: 1px solid rgba(248, 113, 113, 0.18);
 }
+
 .hiddenFileInput {
   display: none;
 }
-

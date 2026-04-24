@@ -1,5 +1,5 @@
 ﻿.form {
-  padding: 8px;
+  padding: 8px 6px 12px;
   border-bottom: 1px solid var(--border);
   box-sizing: border-box;
 }
@@ -7,29 +7,29 @@
 .row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .input {
   flex: 1;
   box-sizing: border-box;
-  padding: 6px 9px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--bg-input);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .submit {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--accent-bg);
-  color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 16px;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .error {
-  margin-top: 4px;
+  margin-top: 6px;
   font-size: 11px;
   color: var(--danger);
 }

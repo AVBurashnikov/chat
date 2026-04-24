@@ -3,8 +3,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--gradient-bg);
-  padding: 20px;
+  background: transparent;
+  padding: 16px;
   position: relative;
   overflow: hidden;
 }
@@ -13,19 +13,19 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 20%, rgba(125, 211, 252, 0.16), transparent 22%),
-    radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.12), transparent 18%);
+    radial-gradient(circle at 20% 18%, rgba(99, 102, 241, 0.2), transparent 26%),
+    radial-gradient(circle at 84% 82%, rgba(244, 63, 94, 0.14), transparent 24%);
   pointer-events: none;
 }
 
 .shell {
   width: 100%;
-  max-width: 1100px;
-  height: 90vh;
+  max-width: 1280px;
+  height: 100%;
   background: var(--bg-surface);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  border-radius: 28px;
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  border-radius: 26px;
   box-shadow: var(--shadow);
   overflow: hidden;
   display: flex;
@@ -37,7 +37,7 @@
 }
 
 .header {
-  min-height: 72px;
+  min-height: 78px;
   padding: 0 24px;
   display: flex;
   align-items: center;
@@ -57,15 +57,16 @@
 
 .logo {
   color: var(--text-primary);
-  font-weight: 800;
+  font-family: var(--font-primary);
+  font-weight: 500;
   letter-spacing: 0.08em;
-  font-size: 15px;
+  font-size: 16px;
   text-transform: uppercase;
 }
 
 .tagline {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.04em;
 }
 
@@ -104,13 +105,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+  font-family: var(--font-primary);
+  font-weight: 600;
   box-shadow: var(--surface-glow);
   flex-shrink: 0;
 }
 
 .userName {
   font-size: 14px;
+  font-family: var(--font-primary);
   color: var(--text-secondary);
   white-space: nowrap;
 }
@@ -129,7 +132,7 @@
 .main {
   flex: 1;
   display: flex;
-  background: var(--bg-primary);
+  background: transparent;
   overflow: hidden;
   min-width: 0;
 }
@@ -140,6 +143,12 @@
 
 .mobileOnly {
   display: none;
+}
+
+@media (max-width: 1024px) {
+  .root {
+    padding: 12px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -155,7 +164,7 @@
   }
 
   .header {
-    min-height: 64px;
+    min-height: 66px;
     padding: 12px 14px;
   }
 

@@ -1,21 +1,28 @@
 ﻿.picker {
   position: absolute;
-  bottom: 70px;
+  bottom: 72px;
   left: 10px;
   z-index: 1000;
-  background: var(--bg-form);
+  background: var(--surface-elevated);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--surface-glow);
-  padding: 8px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  padding: 10px;
   max-width: 400px;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 4px;
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 
 .emojiButton {
   font-size: 20px;
   background: transparent;
   border: none;
+  border-radius: 8px;
+}
+
+.emojiButton:hover {
+  background: var(--bg-hover);
 }

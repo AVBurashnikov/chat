@@ -1,4 +1,4 @@
-.button {
+﻿.button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,12 +8,11 @@
   color: var(--text-primary);
   cursor: pointer;
   flex-shrink: 0;
-  transition: 0.15s ease;
+  transition: all 0.3s ease;
 }
 
 .button:hover {
   background: var(--bg-hover);
-  cursor: pointer;
 }
 
 .button:disabled {
@@ -21,7 +20,6 @@
   cursor: default;
 }
 
-/* sizes */
 .sm {
   width: 32px;
   height: 32px;
@@ -40,7 +38,6 @@
   font-size: 18px;
 }
 
-/* variants */
 .default {}
 
 .danger {
@@ -48,7 +45,7 @@
 }
 
 .accent {
-  background: var(--gradient-selected);
-  border: none;
-  color: white;
+  background: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 75%, #ffffff 25%);
+  color: #ffffff;
 }

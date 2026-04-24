@@ -2,18 +2,24 @@
   width: 320px;
   box-sizing: border-box;
   border-right: 1px solid var(--border-strong);
-  background: linear-gradient(180deg, var(--gradient-header), transparent);
-  padding: 12px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  gap: 14px;
+  margin: 8px;
 }
 
 .mobile {
   width: min(320px, 100vw);
   border-right: none;
+  border-radius: 0;
+  margin: 0;
   position: fixed;
   top: 0;
   left: 0;
@@ -34,12 +40,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .mobileTitle {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-family: var(--font-primary);
+  font-weight: 500;
   color: var(--text-primary);
 }
 
@@ -54,19 +61,21 @@
 }
 
 .desktopHeader {
-  padding: 8px 10px 4px;
+  padding: 4px 2px;
 }
 
 .inboxLabel {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.2em;
+  font-weight: 700;
 }
 
 .title {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 28px;
+  font-family: var(--font-primary);
+  font-weight: 500;
   color: var(--text-primary);
   margin-top: 2px;
 }
@@ -75,4 +84,11 @@
   flex: 1;
   overflow-y: auto;
   padding-right: 2px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 14px;
+    gap: 12px;
+  }
 }

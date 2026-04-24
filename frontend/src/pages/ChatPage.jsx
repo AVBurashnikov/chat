@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ChatList } from '../components/ChatList';
 import { ChatWindow } from '../components/ChatWindow';
@@ -6,6 +6,7 @@ import {
   requestBrowserNotificationPermission,
   showBrowserNotification,
 } from '../utils/browserNotifications';
+import styles from './ChatPage.module.css';
 
 export const ChatPage = () => {
   const [selectedId, setSelectedId] = useState(null);
@@ -69,8 +70,7 @@ export const ChatPage = () => {
 
         queryClient.invalidateQueries({ queryKey: ['chats'] });
 
-        const shouldNotify =
-          payload.chat_id !== selectedId || document.hidden;
+        const shouldNotify = payload.chat_id !== selectedId || document.hidden;
 
         if (!shouldNotify) {
           return;
@@ -111,15 +111,7 @@ export const ChatPage = () => {
       {isMobile && isMobileMenuOpen && (
         <div
           onClick={() => setIsMobileMenuOpen(false)}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
-            zIndex: 999,
-          }}
+          className={styles.overlay}
         />
       )}
 

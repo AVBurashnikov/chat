@@ -1,7 +1,7 @@
-.container {
+﻿.container {
   padding: 12px 14px;
   border-left: 3px solid var(--accent-strong);
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-surface) 78%, transparent);
   border-radius: 16px;
   display: flex;
   gap: 12px;
@@ -21,7 +21,7 @@
   font-weight: 800;
   color: var(--accent);
   margin-bottom: 4px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -40,7 +40,7 @@
   color: var(--danger);
   font-size: 15px;
   flex-shrink: 0;
-  transition: 0.15s ease;
+  transition: 0.3s ease;
 }
 
 .cancelButton:hover {

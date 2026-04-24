@@ -1,10 +1,10 @@
-.container {
+﻿.container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-surface) 78%, transparent);
   border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: var(--surface-glow);
@@ -56,12 +56,9 @@
   color: var(--danger);
   font-size: 15px;
   flex-shrink: 0;
+  transition: 0.3s ease;
 }
 
 .removeButton:hover {
   background: var(--bg-hover);
-}
-
-.removeButton {
-  transition: 0.15s ease;
 }

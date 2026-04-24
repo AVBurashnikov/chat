@@ -1,6 +1,6 @@
 ﻿.wrapper {
   display: flex;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
   align-items: flex-end;
   gap: 10px;
   position: relative;
@@ -30,7 +30,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+  font-family: var(--font-primary);
+  font-weight: 600;
   flex-shrink: 0;
   box-shadow: var(--surface-glow);
 }
@@ -46,7 +47,7 @@
 }
 
 .content {
-  max-width: min(70%, 680px);
+  max-width: min(72%, 680px);
   word-break: break-word;
   display: flex;
   flex-direction: column;
@@ -61,11 +62,10 @@
 }
 
 .bubble {
-  padding: 12px 14px;
-  border-radius: 22px;
+  padding: 14px 16px;
+  border-radius: 18px;
   font-size: 14px;
   line-height: 1.5;
-  box-shadow: var(--shadow-card);
   overflow: hidden;
   white-space: pre-wrap;
 }
@@ -73,34 +73,37 @@
 .bubbleMine {
   background: var(--msg-own);
   color: var(--msg-text-own);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom-right-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top-right-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .bubbleOther {
   background: var(--msg-other);
   color: var(--msg-text-other);
   border: 1px solid var(--border);
-  border-bottom-left-radius: 8px;
+  border-top-left-radius: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .reply {
-  padding: 8px;
+  padding: 8px 10px;
   margin-bottom: 10px;
-  padding-left: 10px;
-  border-radius: 2px;
+  border-radius: 10px;
   font-size: 12px;
 }
 
 .replyMine {
-  border-left: 3px solid rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.86);
+  border-left: 3px solid rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .replyOther {
-  border-left: 3px solid var(--accent-strong);
-  background: rgba(125, 211, 252, 0.08);
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent-bg) 65%, transparent);
   color: var(--text-secondary);
 }
 
@@ -118,7 +121,7 @@
   max-width: 100%;
   max-height: 260px;
   display: block;
-  border-radius: 16px;
+  border-radius: 14px;
   cursor: pointer;
   box-shadow: 0 12px 24px rgba(2, 6, 23, 0.22);
 }
@@ -142,12 +145,13 @@
 }
 
 .fileMine {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .fileOther {
-  background: rgba(125, 211, 252, 0.08);
+  background: color-mix(in srgb, var(--bg-surface) 75%, transparent);
+  border: 1px solid var(--border);
 }
 
 .fileIcon {
@@ -185,9 +189,9 @@
 
 .statusSent,
 .statusDelivered {
-  color: rgba(243, 247, 255, 0.72);
+  color: rgba(226, 232, 240, 0.9);
 }
 
 .statusRead {
-  color: #7dd3fc;
+  color: #60a5fa;
 }
