@@ -72,7 +72,8 @@ export const MessageInput = ({
     }
   };
 
-  const handleSendPointerDown = () => {
+  const handleSendPointerDown = (e) => {
+    e.preventDefault();
     if (!isUltraCompact || disabled) {
       return;
     }
