@@ -51,6 +51,7 @@
   word-break: break-word;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .alignEnd {
@@ -86,6 +87,14 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.bubbleDeleted {
+  opacity: 0.78;
+}
+
+.deletedText {
+  font-style: italic;
 }
 
 .reply {
@@ -194,4 +203,53 @@
 
 .statusRead {
   color: #60a5fa;
+}
+
+.editedMark {
+  margin-top: 6px;
+  font-size: 11px;
+  opacity: 0.72;
+}
+
+.deletePanel {
+  position: absolute;
+  top: calc(100% - 4px);
+  min-width: 220px;
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-card);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.deletePanelLeft {
+  left: 8px;
+}
+
+.deletePanelRight {
+  right: 8px;
+}
+
+.deleteAction {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.deleteAction:hover {
+  background: var(--bg-hover);
+}
+
+.deleteActionDanger {
+  color: var(--danger);
 }

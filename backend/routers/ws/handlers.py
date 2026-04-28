@@ -14,6 +14,7 @@ from routers.ws.manager import ConnectionManager, notification_manager
 from routers.ws.status import broadcast_read_status, broadcast_multiple_read_statuses
 
 logger = logging.getLogger(__name__)
+DELETED_MESSAGE_TEXT = "Сообщение удалено"
 
 
 async def notify_chat_participants(
@@ -164,7 +165,7 @@ async def handle_new_message(
             if reply_msg:
                 reply_payload = {
                     "id": reply_msg.id,
-                    "content": reply_msg.content,
+                    "content": DELETED_MESSAGE_TEXT if reply_msg.is_deleted else reply_msg.content,
                     "sender_username": reply_msg.sender.username,
                 }
 
@@ -177,10 +178,14 @@ async def handle_new_message(
             "sender_username": username,
             "content": message.content,
             "created_at": message.created_at.isoformat(),
+            "edited_at": None,
+            "deleted_at": None,
             "delivered_at": message.delivered_at.isoformat() if message.delivered_at else None,
             "read_at": message.read_at.isoformat() if message.read_at else None,
             "reply_to": message.reply_to,
-            "reply_to_message": reply_payload
+            "reply_to_message": reply_payload,
+            "is_edited": False,
+            "is_deleted": False,
         }
 
         await notify_chat_participants(

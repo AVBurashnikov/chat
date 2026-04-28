@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
@@ -7,11 +7,18 @@ export const useMessageInput = ({
   onSendFile,
   replyTo,
   onCancelReply,
+  editingMessage,
 }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  useEffect(() => {
+    setMessage(editingMessage?.rawContent ?? editingMessage?.content ?? '');
+    setError('');
+    setSelectedFiles([]);
+  }, [editingMessage]);
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
@@ -20,6 +27,11 @@ export const useMessageInput = ({
     const trimmed = message.trim();
 
     if (selectedFiles.length > 0) {
+      if (editingMessage) {
+        setError('Editing attachments is not supported');
+        return;
+      }
+
       if (trimmed.length > 5000) {
         setError('Message is too long');
         return;
@@ -41,7 +53,7 @@ export const useMessageInput = ({
       return;
     }
 
-    if (!trimmed) {
+    if (!trimmed && !editingMessage?.file_url) {
       setError('Message cannot be empty');
       return;
     }
@@ -52,8 +64,12 @@ export const useMessageInput = ({
     }
 
     onSend(trimmed, replyTo?.id);
-    onCancelReply?.();
-    setMessage('');
+    if (!editingMessage) {
+      onCancelReply?.();
+    }
+    if (!editingMessage) {
+      setMessage('');
+    }
   };
 
   const addSelectedFiles = (fileList) => {

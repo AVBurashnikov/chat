@@ -3,12 +3,13 @@ Message endpoints - send and list messages in chats.
 """
 
 import logging
-import os
 import shutil
+from datetime import datetime
 from pathlib import Path
 from typing import List
 
-from fastapi import APIRouter, Depends, File, HTTPException, status, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Response, status, UploadFile
+from sqlalchemy import exists
 from sqlalchemy.orm import Session, joinedload
 
 import auth as auth_utils
@@ -17,10 +18,12 @@ import schemas
 from db import get_db
 from routers.chats.utils import check_chat_membership
 from routers.messages.utils import (
+    build_message_response,
     mark_messages_read,
     broadcast_read_statuses,
     build_message_read_response,
 )
+from routers.ws import manager
 from routers.ws.handlers import notify_chat_participants
 
 router = APIRouter(prefix="/api/chats", tags=["messages"])
@@ -64,14 +67,23 @@ async def list_messages(
     # Get messages
     messages = (
         db.query(models.Message, models.User.username)
-        .options(joinedload(models.Message.reply_to_message))
+        .options(
+            joinedload(models.Message.reply_to_message).joinedload(models.Message.sender),
+            joinedload(models.Message.hidden_for_users),
+        )
         .join(models.User, models.User.id == models.Message.sender_id)
         .filter(models.Message.chat_id == chat_id)
+        .filter(
+            ~exists().where(
+                models.MessageHidden.message_id == models.Message.id,
+                models.MessageHidden.user_id == current_user.id,
+            )
+        )
         .order_by(models.Message.created_at.asc())
         .all()
     )
 
-    return build_message_read_response(messages)
+    return build_message_read_response(messages, current_user.id)
 
 
 @router.post("/{chat_id}/messages", response_model=schemas.MessageRead)
@@ -141,12 +153,16 @@ async def send_message(
         sender_username=current_user.username,
         content=message.content,
         created_at=message.created_at,
+        edited_at=message.edited_at,
+        deleted_at=message.deleted_at,
         delivered_at=message.delivered_at,
         read_at=message.read_at,
         file_url=message.file_url,
         file_name=message.file_name,
         file_type=message.file_type,
         file_size=message.file_size,
+        is_edited=False,
+        is_deleted=False,
     )
 
 
@@ -289,10 +305,199 @@ async def upload_file_message(
         sender_username=current_user.username,
         content=message.content,
         created_at=message.created_at,
+        edited_at=message.edited_at,
+        deleted_at=message.deleted_at,
         delivered_at=message.delivered_at,
         read_at=message.read_at,
         file_url=message.file_url,
         file_name=message.file_name,
         file_type=message.file_type,
         file_size=message.file_size,
+        is_edited=False,
+        is_deleted=False,
     )
+
+
+def get_chat_message_or_404(
+    db: Session,
+    chat_id: int,
+    message_id: int,
+) -> models.Message:
+    message = (
+        db.query(models.Message)
+        .options(
+            joinedload(models.Message.sender),
+            joinedload(models.Message.reply_to_message).joinedload(models.Message.sender),
+            joinedload(models.Message.reply_to_message).joinedload(models.Message.hidden_for_users),
+            joinedload(models.Message.hidden_for_users),
+        )
+        .filter(
+            models.Message.id == message_id,
+            models.Message.chat_id == chat_id,
+        )
+        .first()
+    )
+    if not message:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Message not found",
+        )
+    return message
+
+
+def remove_uploaded_file(file_url: str | None) -> None:
+    if not file_url:
+        return
+
+    filename = Path(file_url).name
+    file_path = Path("uploads") / filename
+    if file_path.exists():
+        file_path.unlink()
+
+
+@router.patch("/{chat_id}/messages/{message_id}", response_model=schemas.MessageRead)
+async def update_message(
+        chat_id: int,
+        message_id: int,
+        message_in: schemas.MessageUpdate,
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(
+            auth_utils.get_current_active_user
+        ),
+):
+    check_chat_membership(db, chat_id, current_user.id)
+    message = get_chat_message_or_404(db, chat_id, message_id)
+
+    if message.sender_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can edit only your own messages",
+        )
+
+    if message.is_deleted:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Deleted message cannot be edited",
+        )
+
+    content = message_in.content.strip()
+    if not content and not message.file_url:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Message content cannot be empty",
+        )
+
+    import html
+
+    message.content = html.escape(content)
+    message.edited_at = datetime.utcnow()
+    db.add(message)
+    db.commit()
+    db.refresh(message)
+
+    response = build_message_response(message, current_user.username, current_user.id)
+    await manager.broadcast(
+        chat_id,
+        {
+            "type": "message_updated",
+            **response.model_dump(mode="json"),
+        },
+    )
+    await notify_chat_participants(
+        db,
+        chat_id,
+        current_user.id,
+        {
+            "type": "message_updated",
+            "chat_id": chat_id,
+            "message_id": message.id,
+            "preview": response.content,
+        },
+    )
+
+    return response
+
+
+@router.delete("/{chat_id}/messages/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_message(
+        chat_id: int,
+        message_id: int,
+        delete_in: schemas.MessageDeleteRequest,
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(
+            auth_utils.get_current_active_user
+        ),
+):
+    check_chat_membership(db, chat_id, current_user.id)
+    message = get_chat_message_or_404(db, chat_id, message_id)
+
+    if delete_in.delete_for_everyone:
+        if message.sender_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You can delete for everyone only your own messages",
+            )
+
+        if not message.is_deleted:
+            remove_uploaded_file(message.file_url)
+            message.content = ""
+            message.file_url = None
+            message.file_name = None
+            message.file_type = None
+            message.file_size = None
+            message.deleted_at = datetime.utcnow()
+            message.is_deleted = True
+            message.edited_at = None
+            db.add(message)
+            db.commit()
+
+        await manager.broadcast(
+            chat_id,
+            {
+                "type": "message_deleted",
+                "chat_id": chat_id,
+                "message_id": message.id,
+                "delete_for_everyone": True,
+            },
+        )
+        await notify_chat_participants(
+            db,
+            chat_id,
+            current_user.id,
+            {
+                "type": "message_deleted",
+                "chat_id": chat_id,
+                "message_id": message.id,
+                "delete_for_everyone": True,
+            },
+        )
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    hidden = (
+        db.query(models.MessageHidden)
+        .filter(
+            models.MessageHidden.message_id == message.id,
+            models.MessageHidden.user_id == current_user.id,
+        )
+        .first()
+    )
+    if not hidden:
+        db.add(
+            models.MessageHidden(
+                message_id=message.id,
+                user_id=current_user.id,
+            )
+        )
+        db.commit()
+
+    await manager.broadcast(
+        chat_id,
+        {
+            "type": "message_deleted",
+            "chat_id": chat_id,
+            "message_id": message.id,
+            "delete_for_everyone": False,
+            "user_id": current_user.id,
+        },
+    )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

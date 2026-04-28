@@ -122,3 +122,28 @@ export async function sendFileMessage(
     throw error;
   }
 }
+
+export async function updateMessage(chatId, messageId, content) {
+  try {
+    const { data } = await apiClient.patch(`/chats/${chatId}/messages/${messageId}`, {
+      content,
+    });
+    return data;
+  } catch (error) {
+    console.error('Update message error:', error);
+    throw error;
+  }
+}
+
+export async function deleteMessage(chatId, messageId, deleteForEveryone = false) {
+  try {
+    await apiClient.delete(`/chats/${chatId}/messages/${messageId}`, {
+      data: {
+        delete_for_everyone: deleteForEveryone,
+      },
+    });
+  } catch (error) {
+    console.error('Delete message error:', error);
+    throw error;
+  }
+}

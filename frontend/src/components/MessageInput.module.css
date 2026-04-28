@@ -20,6 +20,37 @@
   padding-right: 2px;
 }
 
+.editBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--accent-bg) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+}
+
+.editCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.editHint {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.editCancel {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .inputRow {
   display: flex;
   gap: 10px;

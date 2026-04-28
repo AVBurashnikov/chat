@@ -69,7 +69,7 @@ class ChatRead(ChatBase):
 class MessageBase(BaseModel):
     """Base message schema."""
 
-    content: constr(min_length=1, max_length=5000)  # type: ignore
+    content: str
     file_url: Optional[str] = None
     file_name: Optional[str] = None
     file_type: Optional[str] = None
@@ -78,6 +78,8 @@ class MessageBase(BaseModel):
 
 class MessageCreate(MessageBase):
     """Message creation schema."""
+
+    content: constr(min_length=1, max_length=5000)  # type: ignore
     reply_to: Optional[int] = None
 
 
@@ -98,13 +100,25 @@ class MessageRead(MessageBase):
     sender_id: int
     sender_username: str
     created_at: datetime
+    edited_at: Optional[datetime] = None
+    deleted_at: Optional[datetime] = None
     delivered_at: Optional[datetime] = None
     read_at: Optional[datetime] = None
     reply_to: Optional[int] = None
     reply_to_message: Optional[MessageReply] = None
+    is_edited: bool = False
+    is_deleted: bool = False
 
     class Config:
         from_attributes = True
+
+
+class MessageUpdate(BaseModel):
+    content: constr(min_length=0, max_length=5000)  # type: ignore
+
+
+class MessageDeleteRequest(BaseModel):
+    delete_for_everyone: bool = False
 
 
 class ChatWithMessages(ChatRead):

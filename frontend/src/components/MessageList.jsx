@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { MessageItem } from './MessageItem';
 import styles from './MessageList.module.css';
 
-export const MessageList = ({ messages, onReply }) => {
+export const MessageList = ({ messages, onReply, onEdit, onDelete }) => {
   const bottomRef = useRef(null);
 
   const formatDateLabel = (date) => {
@@ -58,7 +58,13 @@ export const MessageList = ({ messages, onReply }) => {
             <div className={styles.dateLabel}>{dateLabel}</div>
           </div>
           {msgs.map((message) => (
-            <MessageItem key={message.id} message={message} onReply={onReply} />
+            <MessageItem
+              key={message.id}
+              message={message}
+              onReply={onReply}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
           ))}
         </div>
       ))}

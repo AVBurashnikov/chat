@@ -69,6 +69,9 @@ class Message(Base):
     content = Column(Text, nullable=False)
     reply_to = Column(Integer, ForeignKey("messages.id", ondelete="SET NULL"), nullable=True)  # New field for replies
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    edited_at = Column(DateTime, nullable=True, default=None)
+    deleted_at = Column(DateTime, nullable=True, default=None)
+    is_deleted = Column(Boolean, default=False, nullable=False)
     delivered_at = Column(DateTime, nullable=True, default=None)
     read_at = Column(DateTime, nullable=True, default=None)
     # File attachment fields
@@ -86,3 +89,23 @@ class Message(Base):
         backref="replies",
         lazy="joined"
     )
+    hidden_for_users = relationship(
+        "MessageHidden",
+        back_populates="message",
+        cascade="all, delete-orphan",
+    )
+
+
+class MessageHidden(Base):
+    __tablename__ = "message_hidden"
+    __table_args__ = (
+        UniqueConstraint("message_id", "user_id", name="uq_message_hidden_user"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    message_id = Column(Integer, ForeignKey("messages.id", ondelete="CASCADE"))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    hidden_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    message = relationship("Message", back_populates="hidden_for_users")
+    user = relationship("User")

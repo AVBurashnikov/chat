@@ -5,7 +5,7 @@ Chat helper functions for common database operations.
 from datetime import datetime
 from typing import Optional, List
 
-from sqlalchemy import func
+from sqlalchemy import exists, func
 from sqlalchemy.orm import Session
 
 import models
@@ -75,6 +75,7 @@ def get_chat_title_and_online_status(
 def get_last_message_info(
     db: Session,
     chat_id: int,
+    current_user_id: int,
 ) -> tuple[Optional[str], Optional[str], Optional[datetime]]:
     """
     Get the last message details for a chat.
@@ -86,10 +87,18 @@ def get_last_message_info(
     Returns:
         Tuple of last message text, sender username, and timestamp
     """
+    from routers.messages.utils import DELETED_MESSAGE_TEXT
+
     last_message = (
         db.query(models.Message, models.User.username)
         .join(models.User, models.User.id == models.Message.sender_id)
         .filter(models.Message.chat_id == chat_id)
+        .filter(
+            ~exists().where(
+                models.MessageHidden.message_id == models.Message.id,
+                models.MessageHidden.user_id == current_user_id,
+            )
+        )
         .order_by(models.Message.created_at.desc())
         .first()
     )
@@ -98,7 +107,8 @@ def get_last_message_info(
         return None, None, None
 
     message, username = last_message
-    return message.content, username, message.created_at
+    content = DELETED_MESSAGE_TEXT if message.is_deleted else message.content
+    return content, username, message.created_at
 
 
 def get_unread_count(
@@ -122,6 +132,11 @@ def get_unread_count(
     unread_q = db.query(func.count(models.Message.id)).filter(
         models.Message.chat_id == chat_id,
         models.Message.sender_id != current_user_id,
+        models.Message.is_deleted.is_(False),
+        ~exists().where(
+            models.MessageHidden.message_id == models.Message.id,
+            models.MessageHidden.user_id == current_user_id,
+        ),
     )
 
     if last_read is not None:
@@ -155,7 +170,7 @@ def build_chat_read_response(
     unread_count = get_unread_count(db, chat.id, current_user_id, last_read)
     title, other_online = get_chat_title_and_online_status(db, chat, current_user_id)
     last_message_text, last_message_sender, last_message_time = (
-        get_last_message_info(db, chat.id)
+        get_last_message_info(db, chat.id, current_user_id)
     )
 
     return schemas.ChatRead(

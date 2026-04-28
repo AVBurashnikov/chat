@@ -2,7 +2,7 @@
  * Component for a single message in the chat
  */
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import styles from './MessageItem.module.css';
 
@@ -14,11 +14,25 @@ const STATUS_ICONS = {
   delivered: '✓✓',
 };
 
-export const MessageItem = ({ message, onReply }) => {
+export const MessageItem = ({ message, onReply, onEdit, onDelete }) => {
   const { user } = useAuth();
   const timerRef = useRef(null);
+  const contentRef = useRef(null);
 
   const [isMessageDropdownOpen, setMessageDropdownOpen] = useState(false);
+  const [isDeleteMenuOpen, setDeleteMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (contentRef.current && !contentRef.current.contains(event.target)) {
+        setMessageDropdownOpen(false);
+        setDeleteMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   const mine = user && message.sender_id === user.id;
   const utcDate = new Date(message.created_at + (message.created_at.includes('Z') ? '' : 'Z'));
@@ -66,7 +80,7 @@ export const MessageItem = ({ message, onReply }) => {
   const handleTouchEnd = (e) => {
     const diff = e.changedTouches[0].clientX - touchStartX.current;
 
-    if (diff > 50) {
+    if (diff > 50 && !message.is_deleted) {
       onReply(message);
     }
     if (timerRef.current) {
@@ -76,6 +90,8 @@ export const MessageItem = ({ message, onReply }) => {
 
   const replyClass = `${styles.reply} ${mine ? styles.replyMine : styles.replyOther}`;
   const fileWrapperClass = `${styles.fileWrapper} ${!message.content ? styles.fileWrapperNoContent : ''}`;
+  const canReply = !message.is_deleted;
+  const displayContent = message.content;
 
   return (
     <div
@@ -87,6 +103,7 @@ export const MessageItem = ({ message, onReply }) => {
     >
       {!mine && <div className={`${styles.avatar} ${styles.avatarOther}`}>{initial}</div>}
       <div
+        ref={contentRef}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -95,10 +112,37 @@ export const MessageItem = ({ message, onReply }) => {
           ${mine ? styles.alignEnd : styles.alignStart}
         `}
       >
+        {isDeleteMenuOpen && (
+          <div className={`${styles.deletePanel} ${mine ? styles.deletePanelRight : styles.deletePanelLeft}`}>
+            <button
+              type="button"
+              className={styles.deleteAction}
+              onClick={() => {
+                setDeleteMenuOpen(false);
+                onDelete(message, false);
+              }}
+            >
+              Удалить только у себя
+            </button>
+            {mine && (
+              <button
+                type="button"
+                className={`${styles.deleteAction} ${styles.deleteActionDanger}`}
+                onClick={() => {
+                  setDeleteMenuOpen(false);
+                  onDelete(message, true);
+                }}
+              >
+                Удалить у обоих
+              </button>
+            )}
+          </div>
+        )}
         <div
           className={`
             ${styles.bubble}
             ${mine ? styles.bubbleMine : styles.bubbleOther}
+            ${message.is_deleted ? styles.bubbleDeleted : ''}
           `}
         >
           {message.reply_to_message && (
@@ -151,7 +195,10 @@ export const MessageItem = ({ message, onReply }) => {
               </a>
             </div>
           )}
-          {message.content}
+          <div className={message.is_deleted ? styles.deletedText : ''}>{displayContent}</div>
+          {message.is_edited && !message.is_deleted && (
+            <div className={styles.editedMark}>изменено</div>
+          )}
         </div>
 
         <div className={styles.footer}>
@@ -168,7 +215,13 @@ export const MessageItem = ({ message, onReply }) => {
         {isMessageDropdownOpen && (
           <MessageDropdown
             message={message}
-            onReply={onReply}
+            onReply={(item) => {
+              if (canReply) {
+                onReply(item);
+              }
+            }}
+            onEdit={onEdit}
+            onDelete={() => setDeleteMenuOpen(true)}
             isMine={mine}
             isOpen={isMessageDropdownOpen}
             setOpen={setMessageDropdownOpen}

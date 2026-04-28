@@ -9,6 +9,8 @@ const ICONS = {
 export const MessageDropdown = ({
   message,
   onReply,
+  onEdit,
+  onDelete,
   isMine,
   isOpen,
   setOpen,
@@ -34,10 +36,12 @@ export const MessageDropdown = ({
   };
 
   const handleEdit = () => {
+    onEdit?.(message);
     setOpen(false);
   };
 
   const handleDelete = () => {
+    onDelete?.(message);
     setOpen(false);
   };
 
@@ -45,11 +49,11 @@ export const MessageDropdown = ({
     <div ref={menuRef}>
       <DropdownMenu align={isMine ? 'right' : 'left'}>
         <DropdownMenuItem onClick={handleReply}>
-          {ICONS.reply} Reply
+          {ICONS.reply} Ответить
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+        {isMine && <DropdownMenuItem onClick={handleEdit}>Редактировать</DropdownMenuItem>}
         <DropdownMenuItem onClick={handleDelete} danger>
-          {ICONS.delete} Delete
+          {ICONS.delete} Удалить
         </DropdownMenuItem>
       </DropdownMenu>
     </div>

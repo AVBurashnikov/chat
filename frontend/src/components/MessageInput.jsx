@@ -29,6 +29,8 @@ export const MessageInput = ({
   onMenuOpen,
   replyTo,
   onCancelReply,
+  editingMessage,
+  onCancelEdit,
 }) => {
   const {
     message,
@@ -45,6 +47,8 @@ export const MessageInput = ({
     onSendFile,
     replyTo,
     onCancelReply,
+    editingMessage,
+    onCancelEdit,
   });
 
   const [showAttachDropdown, setShowAttachDropdown] = useState(false);
@@ -74,7 +78,7 @@ export const MessageInput = ({
 
   const handleSendPointerDown = (e) => {
     e.preventDefault();
-    if (!isUltraCompact || disabled) {
+    if (!isUltraCompact || disabled || editingMessage) {
       return;
     }
 
@@ -97,7 +101,7 @@ export const MessageInput = ({
       return;
     }
 
-    if (isUltraCompact && !message.trim() && selectedFiles.length === 0) {
+    if (isUltraCompact && !message.trim() && selectedFiles.length === 0 && !editingMessage?.file_url) {
       e.preventDefault();
       return;
     }
@@ -120,6 +124,18 @@ export const MessageInput = ({
 
   return (
     <form onSubmit={handleFormSubmit} className={styles.form}>
+      {editingMessage && (
+        <div className={styles.editBanner}>
+          <div className={styles.editCopy}>
+            <strong>Editing message</strong>
+            <span className={styles.editHint}>Press Enter to save, Esc to cancel</span>
+          </div>
+          <button type="button" className={styles.editCancel} onClick={onCancelEdit}>
+            Cancel
+          </button>
+        </div>
+      )}
+
       {selectedFiles.length > 0 && (
         <div className={styles.previewList}>
           {selectedFiles.map((file, index) => (
@@ -145,6 +161,7 @@ export const MessageInput = ({
             }}
             aria-label="Open emoji picker"
             className={styles.emojiButton}
+            disabled={Boolean(editingMessage)}
           >
             {ICONS.emoji}
           </IconButton>
@@ -177,6 +194,7 @@ export const MessageInput = ({
               }}
               aria-label="Attach files"
               className={styles.attachButton}
+              disabled={Boolean(editingMessage)}
             >
               {ICONS.attach}
             </IconButton>
@@ -201,6 +219,12 @@ export const MessageInput = ({
           maxLength={5000}
           autoComplete="off"
           onKeyDown={(e) => {
+            if (e.key === 'Escape' && editingMessage) {
+              e.preventDefault();
+              onCancelEdit?.();
+              return;
+            }
+
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
               e.stopPropagation();
@@ -218,11 +242,19 @@ export const MessageInput = ({
             disabled={disabled}
             aria-label={
               isUltraCompact
-                ? 'Send message. Long press to attach files'
-                : 'Send message'
+                ? editingMessage
+                  ? 'Save changes'
+                  : 'Send message. Long press to attach files'
+                : editingMessage
+                  ? 'Save changes'
+                  : 'Send message'
             }
             title={
-              isUltraCompact ? 'Long press to attach files' : 'Send message'
+              editingMessage
+                ? 'Save changes'
+                : isUltraCompact
+                  ? 'Long press to attach files'
+                  : 'Send message'
             }
             onPointerDown={handleSendPointerDown}
             onPointerUp={handleSendPointerUp}

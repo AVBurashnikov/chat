@@ -97,7 +97,41 @@ def run_runtime_migrations():
                     conn.execute(
                         text("ALTER TABLE messages ADD COLUMN reply_to INTEGER")
                     )
-                    app_logger.info("Added reply_to column to messages table")    
+                    app_logger.info("Added reply_to column to messages table")
+                if "edited_at" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN edited_at TIMESTAMP")
+                    )
+                    app_logger.info("Added edited_at column to messages table")
+                if "deleted_at" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN deleted_at TIMESTAMP")
+                    )
+                    app_logger.info("Added deleted_at column to messages table")
+                if "is_deleted" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE messages ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE")
+                    )
+                    app_logger.info("Added is_deleted column to messages table")
+
+        if not inspector.has_table("message_hidden"):
+            with engine.begin() as conn:
+                conn.execute(
+                    text(
+                        """
+                        CREATE TABLE message_hidden (
+                            id INTEGER PRIMARY KEY,
+                            message_id INTEGER,
+                            user_id INTEGER,
+                            hidden_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            CONSTRAINT uq_message_hidden_user UNIQUE (message_id, user_id),
+                            FOREIGN KEY(message_id) REFERENCES messages (id) ON DELETE CASCADE,
+                            FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+                        )
+                        """
+                    )
+                )
+            app_logger.info("Created message_hidden table")
     except Exception as e:
         app_logger.error(f"Error running migrations: {e}")
         raise
