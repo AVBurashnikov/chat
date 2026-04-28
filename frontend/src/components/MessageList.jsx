@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { MessageItem } from './MessageItem';
 import styles from './MessageList.module.css';
 
-export const MessageList = ({ messages, onReply, onEdit, onDelete }) => {
+export const MessageList = ({ messages, onReply, onEdit, onDelete, typingUsers }) => {
   const bottomRef = useRef(null);
 
   const formatDateLabel = (date) => {
@@ -50,6 +50,18 @@ export const MessageList = ({ messages, onReply, onEdit, onDelete }) => {
     }
   }, [messages]);
 
+  const typingText = useMemo(() => {
+    if (!typingUsers || typingUsers.length === 0) return '';
+    
+    if (typingUsers.length === 1) {
+      return `${typingUsers[0]} печатает...`;
+    } else if (typingUsers.length === 2) {
+      return `${typingUsers[0]} и ${typingUsers[1]} печатают...`;
+    } else {
+      return `${typingUsers[0]} и ещё ${typingUsers.length - 1} печатают...`;
+    }
+  }, [typingUsers]);
+
   return (
     <div className={styles.container}>
       {Object.entries(groupedMessages).map(([dateLabel, msgs]) => (
@@ -68,6 +80,11 @@ export const MessageList = ({ messages, onReply, onEdit, onDelete }) => {
           ))}
         </div>
       ))}
+      {typingText && (
+        <div className={styles.typingIndicator}>
+          {typingText}
+        </div>
+      )}
       <div ref={bottomRef} />
     </div>
   );

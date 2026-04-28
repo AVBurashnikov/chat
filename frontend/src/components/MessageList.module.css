@@ -30,3 +30,20 @@
     padding: 16px 14px 10px;
   }
 }
+
+.typingIndicator {
+  padding: 8px 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-style: italic;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}

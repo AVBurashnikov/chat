@@ -31,6 +31,7 @@ export const MessageInput = ({
   onCancelReply,
   editingMessage,
   onCancelEdit,
+  onTypingChange,
 }) => {
   const {
     message,
@@ -49,6 +50,7 @@ export const MessageInput = ({
     onCancelReply,
     editingMessage,
     onCancelEdit,
+    onTypingChange,
   });
 
   const [showAttachDropdown, setShowAttachDropdown] = useState(false);
@@ -233,6 +235,16 @@ export const MessageInput = ({
               e.preventDefault();
               e.stopPropagation();
               handleSubmit(e);
+            }
+          }}
+          onFocus={() => {
+            if (message.trim() && !editingMessage) {
+              onTypingChange?.(true);
+            }
+          }}
+          onBlur={() => {
+            if (!editingMessage) {
+              onTypingChange?.(false);
             }
           }}
         />

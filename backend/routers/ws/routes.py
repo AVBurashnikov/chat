@@ -62,6 +62,13 @@ class WSMessage(BaseModel):
         return v.strip()
 
 
+class WSTyping(BaseModel):
+    """WebSocket typing indicator schema."""
+
+    type: str = "typing"
+    is_typing: bool = True
+
+
 @router.websocket("/chats/{chat_id}")
 async def websocket_chat(
         websocket: WebSocket,
@@ -171,6 +178,22 @@ async def websocket_chat(
                         websocket,
                         {"type": "error", "message": "Failed to update read status"}
                     )
+                continue
+
+            # Handle typing indicators from client
+            if data.get("type") == "typing":
+                try:
+                    is_typing = bool(data.get("is_typing", True))
+                    typing_payload = {
+                        "type": "typing",
+                        "user_id": user.id,
+                        "username": user.username,
+                        "chat_id": chat_id,
+                        "is_typing": is_typing,
+                    }
+                    await notify_chat_participants(db, chat_id, user.id, typing_payload)
+                except Exception as e:
+                    logger.error(f"Error handling typing indicator: {e}")
                 continue
 
             # Validate message
