@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+const TYPING_TIMEOUT = 2000;
+const TYPING_CLEAR_DELAY = 1000;
 
 export const useMessageInput = ({
   onSend,
@@ -8,17 +10,72 @@ export const useMessageInput = ({
   replyTo,
   onCancelReply,
   editingMessage,
+  onTypingChange,
 }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const isTypingRef = useRef(false);
+  const typingTimeoutRef = useRef(null);
+  const clearTypingTimeoutRef = useRef(null);
 
   useEffect(() => {
     setMessage(editingMessage?.rawContent ?? editingMessage?.content ?? '');
     setError('');
     setSelectedFiles([]);
   }, [editingMessage]);
+
+  const sendTypingIndicator = (typing) => {
+    if (onTypingChange && !editingMessage) {
+      onTypingChange(typing);
+    }
+  };
+
+  const handleTypingStart = () => {
+    if (!isTypingRef.current && !editingMessage) {
+      isTypingRef.current = true;
+      sendTypingIndicator(true);
+    }
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      if (isTypingRef.current) {
+        isTypingRef.current = false;
+        sendTypingIndicator(false);
+      }
+    }, TYPING_TIMEOUT);
+  };
+
+  const handleTypingStop = () => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+
+    if (clearTypingTimeoutRef.current) {
+      clearTimeout(clearTypingTimeoutRef.current);
+    }
+
+    clearTypingTimeoutRef.current = setTimeout(() => {
+      if (isTypingRef.current) {
+        isTypingRef.current = false;
+        sendTypingIndicator(false);
+      }
+    }, TYPING_CLEAR_DELAY);
+  };
+
+  const handleMessageChange = (newMessage) => {
+    setMessage(newMessage);
+    if (newMessage.trim()) {
+      handleTypingStart();
+    } else {
+      handleTypingStop();
+    }
+  };
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
@@ -107,9 +164,16 @@ export const useMessageInput = ({
     setSelectedFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      if (clearTypingTimeoutRef.current) clearTimeout(clearTypingTimeoutRef.current);
+    };
+  }, []);
+
   return {
     message,
-    setMessage,
+    setMessage: handleMessageChange,
     error,
     selectedFiles,
     showEmojiPicker,

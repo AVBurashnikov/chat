@@ -33,8 +33,10 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   const [socket, setSocket] = useState(null);
   const [replyTo, setReplyTo] = useState(null);
   const [editingMessage, setEditingMessage] = useState(null);
+  const [typingUsers, setTypingUsers] = useState([]);
   const replyToRef = useRef(null);
   const editingMessageRef = useRef(null);
+  const typingTimeoutsRef = useRef({});
 
   useEffect(() => {
     replyToRef.current = replyTo;
@@ -43,6 +45,42 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
   useEffect(() => {
     editingMessageRef.current = editingMessage;
   }, [editingMessage]);
+
+  const handleTypingChange = (isTyping) => {
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
+    
+    socket.send(JSON.stringify({
+      type: 'typing',
+      is_typing: isTyping,
+    }));
+  };
+
+  const clearTypingTimeout = (userId) => {
+    if (typingTimeoutsRef.current[userId]) {
+      clearTimeout(typingTimeoutsRef.current[userId]);
+      delete typingTimeoutsRef.current[userId];
+    }
+  };
+
+  const setTypingUser = (userId, username, isTyping) => {
+    if (userId === user?.id) return;
+
+    clearTypingTimeout(userId);
+
+    if (isTyping) {
+      setTypingUsers((prev) => {
+        if (prev.includes(username)) return prev;
+        return [...prev, username];
+      });
+
+      typingTimeoutsRef.current[userId] = setTimeout(() => {
+        setTypingUsers((prev) => prev.filter((name) => name !== username));
+        delete typingTimeoutsRef.current[userId];
+      }, 3000);
+    } else {
+      setTypingUsers((prev) => prev.filter((name) => name !== username));
+    }
+  };
 
   useEffect(() => {
     if (!chatId) return;
@@ -74,6 +112,8 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
 
         if (msg.type === 'ping') {
           ws.send(JSON.stringify({ type: 'pong' }));
+        } else if (msg.type === 'typing') {
+          setTypingUser(msg.user_id, msg.username, msg.is_typing);
         } else if (msg.type === 'message') {
           queryClient.setQueryData(['messages', chatId], (old = []) => [
             ...old,
@@ -277,6 +317,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
         onReply={setReplyTo}
         onEdit={handleStartEdit}
         onDelete={handleDeleteMessage}
+        typingUsers={typingUsers}
       />
       <MessageInput
         onSend={handleSend}
@@ -288,6 +329,7 @@ export const ChatWindow = ({ chatId, isMobile, onMenuOpen }) => {
         onCancelReply={() => setReplyTo(null)}
         editingMessage={editingMessage}
         onCancelEdit={() => setEditingMessage(null)}
+        onTypingChange={handleTypingChange}
       />
     </div>
   );
