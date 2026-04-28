@@ -38,3 +38,8 @@
 .itemDanger {
   color: var(--danger);
 }
+
+.itemDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

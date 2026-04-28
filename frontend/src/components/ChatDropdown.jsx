@@ -12,6 +12,8 @@ export const ChatDropdown = ({
   onClose,
   onSelect,
   selectedId,
+  isOpen,
+  anchorRef,
 }) => {
   const queryClient = useQueryClient();
 
@@ -62,7 +64,7 @@ export const ChatDropdown = ({
   const muteButtonLabel = muted ? 'Unmute chat' : 'Mute chat';
 
   return (
-    <DropdownMenu>
+    <DropdownMenu isOpen={isOpen} onClose={onClose} anchorRef={anchorRef}>
       <DropdownMenuItem onClick={handleMute}>{muteButtonLabel}</DropdownMenuItem>
       <DropdownMenuItem onClick={handleArchive}>Archive chat</DropdownMenuItem>
       <DropdownMenuItem onClick={handleDelete} danger>

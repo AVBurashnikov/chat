@@ -384,12 +384,12 @@ async def update_message(
     if not content and not message.file_url:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Message content cannot be empty",
+            detail="Message content cannot be empty when message has no file attachment",
         )
 
     import html
 
-    message.content = html.escape(content)
+    message.content = html.escape(message_in.content)
     message.edited_at = datetime.utcnow()
     db.add(message)
     db.commit()

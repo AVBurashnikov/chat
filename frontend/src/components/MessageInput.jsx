@@ -58,6 +58,8 @@ export const MessageInput = ({
   const inputRef = useAutosizeTextarea(message, isMobile ? 120 : 200);
   const longPressTimerRef = useRef(null);
   const suppressSubmitRef = useRef(false);
+  const attachButtonRef = useRef(null);
+  const sendButtonRef = useRef(null);
 
   useEffect(() => {
     const onResize = () => {
@@ -188,6 +190,7 @@ export const MessageInput = ({
         {!isUltraCompact && (
           <div className={styles.attachWrapper}>
             <IconButton
+              ref={attachButtonRef}
               onClick={() => {
                 setShowAttachDropdown((prev) => !prev);
                 setShowEmojiPicker(false);
@@ -205,6 +208,7 @@ export const MessageInput = ({
               onDocumentPick={addSelectedFiles}
               onImagePick={addSelectedFiles}
               align="start"
+              anchorRef={attachButtonRef}
             />
           </div>
         )}
@@ -235,6 +239,7 @@ export const MessageInput = ({
 
         <div className={styles.sendWrapper}>
           <IconButton
+            ref={sendButtonRef}
             type="submit"
             variant="accent"
             size="lg"
@@ -271,6 +276,7 @@ export const MessageInput = ({
               onDocumentPick={addSelectedFiles}
               onImagePick={addSelectedFiles}
               align="end"
+              anchorRef={sendButtonRef}
             />
           )}
         </div>
