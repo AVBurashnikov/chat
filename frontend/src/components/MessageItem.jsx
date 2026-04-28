@@ -18,21 +18,10 @@ export const MessageItem = ({ message, onReply, onEdit, onDelete }) => {
   const { user } = useAuth();
   const timerRef = useRef(null);
   const contentRef = useRef(null);
+  const dropdownAnchorRef = useRef(null);
 
   const [isMessageDropdownOpen, setMessageDropdownOpen] = useState(false);
   const [isDeleteMenuOpen, setDeleteMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (contentRef.current && !contentRef.current.contains(event.target)) {
-        setMessageDropdownOpen(false);
-        setDeleteMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
 
   const mine = user && message.sender_id === user.id;
   const utcDate = new Date(message.created_at + (message.created_at.includes('Z') ? '' : 'Z'));
@@ -213,19 +202,22 @@ export const MessageItem = ({ message, onReply, onEdit, onDelete }) => {
           )}
         </div>
         {isMessageDropdownOpen && (
-          <MessageDropdown
-            message={message}
-            onReply={(item) => {
-              if (canReply) {
-                onReply(item);
-              }
-            }}
-            onEdit={onEdit}
-            onDelete={() => setDeleteMenuOpen(true)}
-            isMine={mine}
-            isOpen={isMessageDropdownOpen}
-            setOpen={setMessageDropdownOpen}
-          />
+          <div ref={dropdownAnchorRef} style={{ position: 'absolute' }}>
+            <MessageDropdown
+              message={message}
+              onReply={(item) => {
+                if (canReply) {
+                  onReply(item);
+                }
+              }}
+              onEdit={onEdit}
+              onDelete={() => setDeleteMenuOpen(true)}
+              isMine={mine}
+              isOpen={isMessageDropdownOpen}
+              setOpen={setMessageDropdownOpen}
+              anchorRef={dropdownAnchorRef}
+            />
+          </div>
         )}
       </div>
 

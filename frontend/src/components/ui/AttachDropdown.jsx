@@ -1,5 +1,5 @@
 ﻿import { useEffect, useRef } from 'react';
-import styles from './AttachDropdown.module.css';
+import { DropdownMenu, DropdownMenuItem } from './DropdownMenu';
 
 const ACCEPT = {
   document:
@@ -13,29 +13,10 @@ export const AttachDropdown = ({
   onDocumentPick,
   onImagePick,
   align = 'start',
+  anchorRef,
 }) => {
-  const wrapperRef = useRef(null);
   const documentInputRef = useRef(null);
   const imageInputRef = useRef(null);
-
-  useEffect(() => {
-    if (!open) return undefined;
-
-    const handleOutsideClick = (event) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
-  }, [open, setOpen]);
-
-  if (!open) {
-    return null;
-  }
 
   const handleDocumentChange = (event) => {
     onDocumentPick(event.target.files);
@@ -50,40 +31,32 @@ export const AttachDropdown = ({
   };
 
   return (
-    <div
-      className={`${styles.dropdown} ${
-        align === 'end' ? styles.alignEnd : styles.alignStart
-      }`}
-      ref={wrapperRef}
+    <DropdownMenu
+      isOpen={open}
+      onClose={() => setOpen(false)}
+      align={align === 'end' ? 'right' : 'left'}
+      anchorRef={anchorRef}
     >
-      <button
-        type="button"
-        className={styles.item}
-        onClick={() => documentInputRef.current?.click()}
-      >
+      <DropdownMenuItem onClick={() => documentInputRef.current?.click()}>
         Document
-      </button>
+      </DropdownMenuItem>
 
-      <button
-        type="button"
-        className={styles.item}
-        onClick={() => imageInputRef.current?.click()}
-      >
+      <DropdownMenuItem onClick={() => imageInputRef.current?.click()}>
         Image
-      </button>
+      </DropdownMenuItem>
 
-      <button type="button" className={`${styles.item} ${styles.disabled}`} disabled>
+      <DropdownMenuItem disabled>
         Contact
-      </button>
+      </DropdownMenuItem>
 
-      <button type="button" className={`${styles.item} ${styles.disabled}`} disabled>
+      <DropdownMenuItem disabled>
         Location
-      </button>
+      </DropdownMenuItem>
 
       <input
         ref={documentInputRef}
         type="file"
-        className={styles.hiddenInput}
+        style={{ display: 'none' }}
         accept={ACCEPT.document}
         multiple
         onChange={handleDocumentChange}
@@ -92,11 +65,11 @@ export const AttachDropdown = ({
       <input
         ref={imageInputRef}
         type="file"
-        className={styles.hiddenInput}
+        style={{ display: 'none' }}
         accept={ACCEPT.image}
         multiple
         onChange={handleImageChange}
       />
-    </div>
+    </DropdownMenu>
   );
 };

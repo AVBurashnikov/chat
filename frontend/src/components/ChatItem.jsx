@@ -2,6 +2,8 @@
  * Component for a single chat item in the chat list
  */
 
+import { useRef } from 'react';
+
 import { useQueryClient } from '@tanstack/react-query';
 import { markChatRead } from '../api/chats';
 import { ChatDropdown } from './ChatDropdown';
@@ -15,6 +17,7 @@ export const ChatItem = ({
   setOpenMenuChatId,
 }) => {
   const queryClient = useQueryClient();
+  const menuButtonRef = useRef(null);
 
   const handleSelect = () => {
     setOpenMenuChatId(null);
@@ -90,6 +93,7 @@ export const ChatItem = ({
 
       <button
         type="button"
+        ref={menuButtonRef}
         onClick={handleToggleMenu}
         title="Chat actions"
         aria-label="Chat actions"
@@ -105,6 +109,8 @@ export const ChatItem = ({
           onClose={() => setOpenMenuChatId(null)}
           onSelect={onSelect}
           selectedId={selectedId}
+          isOpen={isMenuOpen}
+          anchorRef={menuButtonRef}
         />
       )}
     </div>
